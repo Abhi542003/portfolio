@@ -146,7 +146,7 @@ export const Hero = () => {
             </a>
 
             <a
-              href="/resume.pdf"
+              href="/Abhijit_resume.pdf"
               download
               className="flex items-center justify-center space-x-2 py-3 px-7 rounded-xl font-bold glass-panel border border-slate-200 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900/60 hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
             >
