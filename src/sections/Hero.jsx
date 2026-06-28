@@ -537,34 +537,53 @@ export const Hero = () => {
         </div>
       </motion.div>
 
-      {/* ================= FUTURISTIC MOUSE SCROLL DOWN INDICATOR (Fades out smoothly on scroll) ================= */}
+      {/* ================= PREMIUM MOUSE SCROLL DOWN INDICATOR (Fades out on scroll) ================= */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: scrollOpacity }}
-        transition={{ duration: 0.3 }}
-        className="flex flex-col items-center justify-center pt-8 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest pointer-events-none select-none space-y-2"
-        style={{ pointerEvents: 'none' }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: scrollOpacity, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col items-center justify-center pt-8 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest pointer-events-none select-none space-y-3 relative z-10"
       >
-        <div className="w-5 h-8 rounded-full border-2 border-slate-400 dark:border-slate-600 flex justify-center p-1.5">
+        {/* Glowing Mouse Outline */}
+        <div className="w-6 h-10 rounded-full border-2 border-slate-350 dark:border-slate-700/80 bg-slate-900/10 dark:bg-slate-950/20 backdrop-blur-sm relative flex justify-center p-1.5 shadow-[0_0_15px_rgba(168,85,247,0.06)] ring-1 ring-white/5">
+          {/* Glowing Mouse Wheel moving downward */}
           <motion.div
             animate={{
-              y: [0, 6, 0],
-              opacity: [1, 0.4, 1]
+              y: [0, 10, 0],
+              opacity: [1, 0.4, 1],
+              scale: [1, 0.9, 1]
             }}
             transition={{
-              duration: 1.5,
+              duration: 2.0,
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="w-1 h-1.5 bg-purple-500 dark:bg-purple-400 rounded-full"
+            className="w-1.5 h-2.5 bg-gradient-to-b from-purple-500 to-cyan-400 rounded-full shadow-[0_0_10px_#a855f7]"
           />
         </div>
-        <div className="flex flex-col items-center -space-y-1">
-          <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}>↓</motion.span>
-          <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}>↓</motion.span>
-          <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}>↓</motion.span>
+        
+        {/* Pulsing Downward Arrow */}
+        <div className="flex flex-col items-center">
+          <motion.svg 
+            animate={{ 
+              opacity: [0.25, 1.0, 0.25],
+              y: [0, 4, 0] 
+            }} 
+            transition={{ 
+              duration: 2.0, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+            className="w-4 h-4 text-purple-500 dark:text-purple-400 drop-shadow-[0_0_8px_#a855f7]"
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor" 
+            strokeWidth="3"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </motion.svg>
         </div>
-        <span className="font-heading font-extrabold text-[9px] tracking-widest uppercase">Explore Portfolio</span>
+        <span className="font-heading font-extrabold text-[8px] tracking-[0.2em] text-slate-500 dark:text-slate-400/80 uppercase">Scroll to explore</span>
       </motion.div>
 
     </section>

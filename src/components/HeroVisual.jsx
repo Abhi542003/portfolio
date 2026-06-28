@@ -178,9 +178,14 @@ const SceneContent = () => {
     groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.06;
     groupRef.current.rotation.y += (targetRotY - groupRef.current.rotation.y) * 0.06;
 
-    // Scale and Position Rise entry loads
-    const targetScale = active ? 1.05 : 0.15;
-    const targetY = active ? (Math.sin(state.clock.getElapsedTime() * 0.5) * 0.04 - 0.2) : -2;
+    // Dynamic responsive scale of the laptop center-piece based on window width
+    const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    let baseScale = 1.05;
+    if (width < 768) baseScale = 0.65;
+    else if (width < 1200) baseScale = 0.78;
+
+    const targetScale = active ? baseScale : 0.15;
+    const targetY = active ? (Math.sin(state.clock.getElapsedTime() * 0.5) * 0.04 - 0.25) : -2;
 
     groupRef.current.scale.x += (targetScale - groupRef.current.scale.x) * 0.05;
     groupRef.current.scale.y += (targetScale - groupRef.current.scale.y) * 0.05;
@@ -242,7 +247,7 @@ export const HeroVisual = () => {
       </div>
 
       {/* ================= WIDGETS AND CARDS LAYER ================= */}
-      <div className="relative w-full max-w-[340px] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[660px] xl:max-w-[700px] h-full flex items-center justify-center pointer-events-none z-10">
+      <div className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[490px] xl:max-w-[510px] h-full flex items-center justify-center pointer-events-none z-10">
         
         {/* ================= TESTING PIPELINE (Centered at bottom to prevent overlaps) ================= */}
         <motion.div
@@ -287,7 +292,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.2 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-1 md:-left-12 lg:-left-20 xl:-left-24 top-28 md:top-36 w-12 h-12 flex items-center justify-center cursor-none group transition-all duration-305 pointer-events-auto"
+          className="absolute z-20 left-1 md:left-2 top-28 md:top-36 w-12 h-12 flex items-center justify-center cursor-none group transition-all duration-305 pointer-events-auto"
         >
           <motion.div
             animate={{ 
@@ -340,7 +345,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.8 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-2 md:-left-16 lg:-left-28 xl:-left-36 top-2 md:top-6 pointer-events-auto"
+          className="absolute z-20 left-1 md:left-2 top-2 md:top-6 pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -10, 0] }}
@@ -381,7 +386,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.0 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-0 md:-left-24 lg:-left-36 xl:-left-44 top-[110px] md:top-[125px] pointer-events-auto"
+          className="absolute z-20 left-0 md:left-1 top-[105px] md:top-[120px] pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -8, 0] }}
@@ -414,7 +419,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 85, damping: 10, delay: 1.3 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-2 md:-left-14 lg:-left-24 xl:-left-32 top-[200px] md:top-[225px] pointer-events-auto"
+          className="absolute z-20 left-1 md:left-2 top-[195px] md:top-[215px] pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -9, 0] }}
@@ -435,7 +440,7 @@ export const HeroVisual = () => {
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
               </span>
-              <span className="text-[8.5px] font-extrabold text-slate-350 uppercase tracking-wider font-heading">Projects</span>
+              <span className="text-[8.5px] font-extrabold text-slate-355 uppercase tracking-wider font-heading">Projects</span>
             </div>
 
             {/* Checkmarks pop one-by-one */}
@@ -483,7 +488,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.0 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-2 md:-right-16 lg:-right-28 xl:-right-36 top-2 md:top-6 pointer-events-auto"
+          className="absolute z-20 right-1 md:right-2 top-2 md:top-6 pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -9, 0] }}
@@ -518,7 +523,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.1 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-0 md:-right-24 lg:-right-36 xl:-right-44 top-[100px] md:top-[115px] pointer-events-auto"
+          className="absolute z-25 right-0 md:right-1 top-[95px] md:top-[110px] pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -10, 0] }}
@@ -551,7 +556,7 @@ export const HeroVisual = () => {
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.4 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-2 md:-right-14 lg:-right-24 xl:-right-32 top-[180px] md:top-[200px] pointer-events-auto"
+          className="absolute z-20 right-1 md:right-2 top-[175px] md:top-[195px] pointer-events-auto"
         >
           <motion.div
             animate={{

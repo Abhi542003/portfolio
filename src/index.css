@@ -48,6 +48,12 @@
     scroll-behavior: smooth;
   }
 
+  @media (pointer: fine) {
+    html, body, a, button, input, select, textarea, [role="button"], .glass-panel, .glow-border, iframe {
+      cursor: none !important;
+    }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     letter-spacing: -0.025em;
