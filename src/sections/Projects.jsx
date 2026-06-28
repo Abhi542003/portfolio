@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { FiCpu, FiGitPullRequest, FiActivity } from 'react-icons/fi';
 import project1 from '../assets/project1.jpg';
 import project2 from '../assets/project2.jpg';
@@ -9,39 +8,30 @@ import project3 from '../assets/project3.jpg';
 const PROJECTS_DATA = [
   {
     title: 'Syra',
-    desc: 'Performed comprehensive E2E functional testing and verification for the Syra platform. Designed detailed test suites covering user navigation paths, authentication boundaries, and data entries.',
+    desc: 'Performed end-to-end Manual QA testing for the Syra Admin Panel and Mobile Application. Executed Functional, Regression, Smoke, and Sanity testing while validating production releases. Designed detailed test cases, reported defects through Jira, verified bug fixes, and collaborated closely with developers to ensure a stable and high-quality user experience.',
     image: project1,
     icon: <FiCpu className="w-5 h-5 text-purple-400" />,
-    tech: ['Manual Testing', 'Functional Testing', 'Jira', 'Bug Reporting', 'Test Case Design'],
-    demo: '#',
-    github: '#'
+    tech: ['Manual Testing', 'Regression Testing', 'Smoke Testing', 'Jira', 'Test Case Design'],
+    badge: '✔ Production Validated',
+    environment: 'Production | Staging'
   },
   {
     title: 'HYKA',
-    desc: 'Conducted regression testing and API payload validation for the HYKA platform. Authored REST API validation suites and verified status codes and payloads using Postman.',
+    desc: 'Performed comprehensive testing of ERP modules including user management, dashboards, reporting, and business workflows. Conducted API validation using Postman, verified business logic, executed regression testing, and ensured smooth production deployment through detailed QA validation.',
     image: project2,
     icon: <FiGitPullRequest className="w-5 h-5 text-emerald-400" />,
-    tech: ['API Testing', 'Postman', 'Regression Testing', 'SQL Databases', 'Jira Tracking'],
-    demo: '#',
-    github: '#'
+    tech: ['API Testing', 'Postman', 'Functional Testing', 'SQL', 'Bug Reporting'],
+    badge: '✔ Successfully Validated',
+    environment: 'UAT | Staging'
   },
   {
     title: 'OTR',
-    desc: 'Performed responsive UI/UX visual sanity sweeps and layout consistency checks for OTR. Executed cross-browser checks on layout boundaries and responsive mobile views.',
+    desc: 'Validated the complete Return Authorization workflow including responsive UI, business rules, approval process, form validations, and production verification. Performed cross-browser compatibility testing and responsive testing to deliver a seamless user experience.',
     image: project3,
     icon: <FiActivity className="w-5 h-5 text-cyan-400" />,
-    tech: ['Sanity Testing', 'Cross-Browser', 'Mobile Testing', 'Responsive Audits'],
-    demo: '#',
-    github: '#'
-  },
-  {
-    title: 'Internal QA Testing & Validation',
-    desc: 'Created internal testing templates, verification checklists, and bug tracking schemas. Collaborated closely with devs to validate resolved fixes before staging releases.',
-    image: project1,
-    icon: <FiCpu className="w-5 h-5 text-purple-400" />,
-    tech: ['Fix Validation', 'Agile Methodology', 'Jira Tracking', 'Dev Collaboration'],
-    demo: '#',
-    github: '#'
+    tech: ['UI Testing', 'Cross Browser', 'Responsive Testing', 'Validation', 'Regression Testing'],
+    badge: '✔ Production Ready',
+    environment: 'Production | UAT'
   }
 ];
 
@@ -129,26 +119,14 @@ const ProjectCard = ({ project, index }) => {
               ))}
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex items-center space-x-4 pt-1 border-t border-slate-100 dark:border-slate-900">
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-1.5 text-sm font-semibold text-slate-600 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 transition-colors duration-200"
-              >
-                <FaGithub className="w-4 h-4" />
-                <span>Source</span>
-              </a>
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-1.5 text-sm font-semibold text-slate-600 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 transition-colors duration-200 ml-auto"
-              >
-                <FaExternalLinkAlt className="w-3.5 h-3.5" />
-                <span>Live Demo</span>
-              </a>
+            {/* Bottom Info Section */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-900/80 text-xs">
+              <span className="font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                {project.badge}
+              </span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">
+                {project.environment}
+              </span>
             </div>
           </div>
         </div>
@@ -167,7 +145,7 @@ export const Projects = () => {
 
       <div className="text-center mb-16 space-y-2">
         <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Featured <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Projects</span>
+          <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Projects</span>
         </h2>
         <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 mx-auto rounded-full"></div>
       </div>

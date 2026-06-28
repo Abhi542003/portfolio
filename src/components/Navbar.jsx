@@ -82,7 +82,7 @@ export const Navbar = () => {
           </span>
           <div className="flex flex-col text-left">
             <span className="font-bold text-sm tracking-wide text-slate-900 dark:text-white font-heading">
-              Abhijit Rajpurohit
+              Abhijit Rajpurohit 
             </span>
             <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-wider uppercase font-heading -mt-0.5">
               QA Engineer

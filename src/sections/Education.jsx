@@ -10,10 +10,11 @@ const EDUCATION_DATA = [
     institution: 'LDRP Institute of Technology and Research (LDRP-ITR)',
     duration: '2024 – 2026',
     achievements: [
-      'CGPA: 7.0 / 10',
-      'Thesis: "Design and Execution Optimization of Automated Test Suites"',
-      'Received the Student Academic Excellence Award in Software Quality Systems',
-      'Completed specialized research in advanced CI/CD pipeline deployments'
+      '• CGPA: 7.0 / 10',
+      '• Advanced Java & Python Programming',
+      '• Android & iOS Application Development (Basics)',
+      '• Database Management Systems & Software Engineering',
+      '• Data Structures, Algorithms & Operating Systems'
     ]
   },
   {
@@ -22,10 +23,11 @@ const EDUCATION_DATA = [
     institution: 'BK Mehta IT Center',
     duration: '2021 – 2024',
     achievements: [
-      'Graduated First Class with Distinction, CGPA: 8.9 / 10',
-      'Co-founded the college Coding and Quality Assurance Club',
-      'Runner-up in the Inter-University Software Development hackathon',
-      'Core coursework: OOP, Database Management Systems, Data Structures, Web Technology'
+      '• Graduated First Class with Distinction, CGPA: 6.6 / 10',
+      '• C, C++, Java & Python Programming',
+      '• HTML, CSS, JavaScript & PHP Development',
+      '• MySQL Database & Object-Oriented Programming',
+      '• Computer Networks & Software Fundamentals'
     ]
   }
 ];
