@@ -86,7 +86,7 @@ export const Contact = () => {
             <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-heading">
               Let's build something stable
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-body">
               Have a platform that needs comprehensive testing strategies? Need automated CI/CD checks or API stress-testing? Drop a line and let's collaborate on boosting your system stability.
             </p>
 
@@ -98,8 +98,8 @@ export const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</h4>
-                  <a href="mailto:abhijit.rajpurohit.qa@example.com" className="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-purple-500 transition-colors">
-                    abhijit.rajpurohit.qa@example.com
+                  <a href="mailto:rajpurohitabhijit543@gmail.com" className="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-purple-500 transition-colors">
+                    rajpurohitabhijit543@gmail.com
                   </a>
                 </div>
               </div>
@@ -110,8 +110,8 @@ export const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone</h4>
-                  <a href="tel:+1234567890" className="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-cyan-500 transition-colors">
-                    +1 (234) 567-890
+                  <a href="tel:+919427671301" className="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-cyan-500 transition-colors">
+                    +91 94276 71301
                   </a>
                 </div>
               </div>
@@ -123,7 +123,7 @@ export const Contact = () => {
                 <div>
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Location</h4>
                   <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                    San Francisco, CA
+                    Palanpur, Gujarat
                   </span>
                 </div>
               </div>
