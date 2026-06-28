@@ -198,7 +198,7 @@ Please reply directly to the sender if required.`;
         subject: subject,
         message: message,
         _subject: `📩 New Portfolio Contact Request: ${subject}`,
-        _autoresponse: `Hello ${name},\n\nThank you for contacting me through my portfolio website.\n\nI have successfully received your message and appreciate your interest.\n\nI will review it carefully and get back to you within 24–48 hours.\n\nBest Regards,\nAbhijit Rajpurohit\nQA Engineer`
+        _autoresponse: `Hello ${name},\n\nThank you for reaching out through my portfolio website.\n\nI have successfully received your message and will review it carefully. I typically respond within 24 to 48 hours.\n\nIn the meantime, feel free to connect with me on LinkedIn.\n\nBest Regards,\nAbhijit Rajpurohit\nQA Engineer`
       })
     });
 

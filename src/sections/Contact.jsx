@@ -186,7 +186,7 @@ export const Contact = () => {
             <input
               type="hidden"
               name="_autoresponse"
-              value={`Hello ${formData.name},\n\nThank you for contacting me through my portfolio website.\n\nI have successfully received your message and appreciate your interest.\n\nYour message has been added to my inbox, and I will review it carefully.\n\nI typically respond within 24–48 hours.\n\nIn the meantime, feel free to explore my portfolio and connect with me on LinkedIn.\n\nThank you once again for your time.\n\nBest Regards,\n\nAbhijit Rajpurohit\nQA Engineer\n📧 rajpurohitabhijit543@gmail.com\n\n---\nThis is an automated confirmation email. Please do not reply to this email.\n© 2026 Abhijit Rajpurohit. All Rights Reserved.`}
+              value={`Hello ${formData.name},\n\nThank you for reaching out through my portfolio website.\n\nI have successfully received your message and will review it carefully. I typically respond within 24 to 48 hours.\n\nIn the meantime, feel free to connect with me on LinkedIn.\n\nBest Regards,\n\nAbhijit Rajpurohit\nQA Engineer`}
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Name Field */}
