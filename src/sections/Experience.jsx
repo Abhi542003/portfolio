@@ -200,26 +200,33 @@ export const Experience = () => {
           const durationParts = exp.duration.split(/–|-/);
           const startDate = durationParts[0]?.trim();
           const endDate = durationParts[1]?.trim() || '';
+          const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
           return (
             <motion.div
               key={idx}
-              initial={{ 
-                opacity: 0, 
-                scale: 0.7, 
-                y: 120, 
-                rotateX: 15, 
-                rotateY: -10, 
-                filter: "blur(12px)" 
-              }}
-              whileInView={{ 
-                opacity: 1, 
-                scale: 1, 
-                y: 0, 
-                rotateX: 0, 
-                rotateY: 0, 
-                filter: "blur(0px)" 
-              }}
+              initial={isMobile
+                ? { opacity: 0, y: 60, scale: 0.95 }
+                : { 
+                    opacity: 0, 
+                    scale: 0.7, 
+                    y: 120, 
+                    rotateX: 15, 
+                    rotateY: -10, 
+                    filter: "blur(12px)" 
+                  }
+              }
+              whileInView={isMobile
+                ? { opacity: 1, y: 0, scale: 1 }
+                : { 
+                    opacity: 1, 
+                    scale: 1, 
+                    y: 0, 
+                    rotateX: 0, 
+                    rotateY: 0, 
+                    filter: "blur(0px)" 
+                  }
+              }
               viewport={{ once: true, amount: 0.15 }}
               transition={{ 
                 type: "spring", 

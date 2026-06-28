@@ -116,25 +116,32 @@ export const Skills = () => {
             >
               {group.skills.map((skill, idx) => {
                 const randomDelay = Math.random() * 0.35;
+                const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
                 return (
                   <motion.div
                     key={idx}
-                    initial={{ 
-                      opacity: 0, 
-                      scale: 0.7, 
-                      y: 120, 
-                      rotateX: 20, 
-                      rotateY: -15, 
-                      filter: "blur(12px)" 
-                    }}
-                    whileInView={{ 
-                      opacity: 1, 
-                      scale: 1, 
-                      y: 0, 
-                      rotateX: 0, 
-                      rotateY: 0, 
-                      filter: "blur(0px)" 
-                    }}
+                    initial={isMobile
+                      ? { opacity: 0, y: 50, scale: 0.95 }
+                      : { 
+                          opacity: 0, 
+                          scale: 0.7, 
+                          y: 120, 
+                          rotateX: 20, 
+                          rotateY: -15, 
+                          filter: "blur(12px)" 
+                        }
+                    }
+                    whileInView={isMobile
+                      ? { opacity: 1, y: 0, scale: 1 }
+                      : { 
+                          opacity: 1, 
+                          scale: 1, 
+                          y: 0, 
+                          rotateX: 0, 
+                          rotateY: 0, 
+                          filter: "blur(0px)" 
+                        }
+                    }
                     viewport={{ once: true, amount: 0.15 }}
                     transition={{ 
                       type: "spring", 

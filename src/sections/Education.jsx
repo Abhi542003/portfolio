@@ -63,11 +63,11 @@ const EducationCard = ({ edu, idx }) => {
   };
 
   const isLeft = idx === 0;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={{ 
+  const initialAnim = isMobile
+    ? { opacity: 0, y: 60, scale: 0.95 }
+    : { 
         opacity: 0, 
         scale: 0.7, 
         y: 120, 
@@ -75,8 +75,11 @@ const EducationCard = ({ edu, idx }) => {
         rotateX: 20, 
         rotateY: isLeft ? -15 : 15, 
         filter: "blur(12px)" 
-      }}
-      whileInView={{ 
+      };
+
+  const whileInViewAnim = isMobile
+    ? { opacity: 1, y: 0, scale: 1 }
+    : { 
         opacity: 1, 
         scale: 1, 
         y: 0, 
@@ -84,7 +87,13 @@ const EducationCard = ({ edu, idx }) => {
         rotateX: 0, 
         rotateY: 0, 
         filter: "blur(0px)" 
-      }}
+      };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={initialAnim}
+      whileInView={whileInViewAnim}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ 
         type: "spring", 

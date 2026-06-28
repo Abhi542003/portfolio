@@ -62,24 +62,20 @@ const ProjectCard = ({ project, index }) => {
     card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translate3d(0, 0, 0)`;
   };
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  const initialAnim = isMobile
+    ? { opacity: 0, y: 60, scale: 0.95 }
+    : { opacity: 0, scale: 0.7, y: 120, rotateX: 20, rotateY: -15, filter: "blur(12px)" };
+
+  const whileInViewAnim = isMobile
+    ? { opacity: 1, y: 0, scale: 1 }
+    : { opacity: 1, scale: 1, y: 0, rotateX: 0, rotateY: 0, filter: "blur(0px)" };
+
   return (
     <motion.div
-      initial={{ 
-        opacity: 0, 
-        scale: 0.7, 
-        y: 120, 
-        rotateX: 20, 
-        rotateY: -15, 
-        filter: "blur(12px)" 
-      }}
-      whileInView={{ 
-        opacity: 1, 
-        scale: 1, 
-        y: 0, 
-        rotateX: 0, 
-        rotateY: 0, 
-        filter: "blur(0px)" 
-      }}
+      initial={initialAnim}
+      whileInView={whileInViewAnim}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ 
         type: "spring", 
