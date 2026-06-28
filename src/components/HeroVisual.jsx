@@ -182,19 +182,52 @@ export const HeroVisual = () => {
           </div>
         </motion.div>
 
-        {/* 6. Glowing Checkmark Card (Bottom Right) */}
-        <motion.div
-          animate={{ y: [0, -14, 0] }}
-          transition={{ duration: 4.0, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-          whileHover={{ scale: 1.05 }}
-          className="absolute z-20 right-4 bottom-20 w-10 h-10 rounded-xl glass-panel border border-cyan-500/25 flex items-center justify-center shadow-lg cursor-pointer"
-        >
-          <span className="text-cyan-400 text-lg">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </span>
-        </motion.div>
+         
+
+{/* 6. QA Radar Scanner (Bottom Right) */}
+<motion.div
+  animate={{
+    y: [0, -10, 0],
+    rotate: [0, 5, -5, 0],
+  }}
+  transition={{
+    duration: 4,
+    repeat: Infinity,
+    ease: "easeInOut",
+  }}
+  whileHover={{
+    scale: 1.12,
+    rotate: 10,
+  }}
+  className="absolute z-20 right-4 bottom-20 w-12 h-12 rounded-xl glass-panel border border-cyan-500/30 flex items-center justify-center overflow-hidden"
+>
+
+  {/* Rotating Scanner Ring */}
+  <motion.div
+    animate={{ rotate: 360 }}
+    transition={{
+      duration: 3,
+      repeat: Infinity,
+      ease: "linear",
+    }}
+    className="absolute w-8 h-8 rounded-full border-2 border-cyan-400/60"
+  >
+    <div className="absolute top-0 left-1/2 w-[2px] h-4 -translate-x-1/2 bg-cyan-400 rounded-full shadow-[0_0_12px_#22d3ee]" />
+  </motion.div>
+
+  {/* Center Dot */}
+  <motion.div
+    animate={{
+      scale: [1, 1.4, 1],
+      opacity: [0.8, 1, 0.8],
+    }}
+    transition={{
+      duration: 1.5,
+      repeat: Infinity,
+    }}
+    className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_#22d3ee]"
+  />
+</motion.div>
 
       </div>
     </div>
