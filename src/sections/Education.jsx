@@ -162,7 +162,7 @@ export const Education = () => {
 
       <div className="text-center mb-16 space-y-2">
         <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Education &amp; <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Credentials</span>
+        <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Education</span>
         </h2>
         <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 mx-auto rounded-full"></div>
       </div>
