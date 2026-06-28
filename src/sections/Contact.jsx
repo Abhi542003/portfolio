@@ -123,7 +123,7 @@ export const Contact = () => {
                 <div>
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Location</h4>
                   <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                    Palanpur, Gujarat
+                    Gandhinagar, Gujarat
                   </span>
                 </div>
               </div>

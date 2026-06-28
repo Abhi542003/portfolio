@@ -10,7 +10,6 @@ import Projects from './sections/Projects';
 import Achievements from './sections/Achievements';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
-import ParticleBackground from './canvas/ParticleBackground';
 import CursorFollower from './components/CursorFollower';
 
 function App() {
@@ -18,9 +17,6 @@ function App() {
     <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothTouch: false }}>
       <div className="relative min-h-screen bg-slate-50 dark:bg-[#030303] text-slate-900 dark:text-slate-100 selection:bg-purple-500/30 selection:text-purple-900 dark:selection:text-purple-300 transition-colors duration-500">
         
-        {/* Particle Canvas Background */}
-        <ParticleBackground />
-
         {/* Custom Noise Overlay */}
         <div className="noise-overlay" />
 

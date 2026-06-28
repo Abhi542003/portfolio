@@ -48,27 +48,51 @@ const EducationCard = ({ edu, idx }) => {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    // Smooth 3D tilt calculation (-8deg to 8deg)
-    const tiltX = (centerY - y) / 25;
-    const tiltY = (x - centerX) / 25;
+    // Smooth 3D tilt calculation with 1.02x scale and -5px lift
+    const tiltX = (centerY - y) / 18;
+    const tiltY = (x - centerX) / 18;
     
-    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.015, 1.015, 1.015)`;
+    card.style.transform = `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02) translate3d(0, -5px, 0)`;
   };
 
   const handleMouseLeave = () => {
     const card = cardRef.current;
     if (!card) return;
-    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translate3d(0, 0, 0)`;
     setIsHovered(false);
   };
+
+  const isLeft = idx === 0;
 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.7, delay: idx * 0.15 }}
+      initial={{ 
+        opacity: 0, 
+        scale: 0.7, 
+        y: 120, 
+        x: isLeft ? -150 : 150,
+        rotateX: 20, 
+        rotateY: isLeft ? -15 : 15, 
+        filter: "blur(12px)" 
+      }}
+      whileInView={{ 
+        opacity: 1, 
+        scale: 1, 
+        y: 0, 
+        x: 0,
+        rotateX: 0, 
+        rotateY: 0, 
+        filter: "blur(0px)" 
+      }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 85, 
+        damping: 11, 
+        mass: 0.9,
+        delay: idx * 0.1
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setIsHovered(true)}

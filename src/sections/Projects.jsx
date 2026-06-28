@@ -31,7 +31,6 @@ const PROJECTS_DATA = [
     icon: <FiActivity className="w-5 h-5 text-cyan-400" />,
     tech: ['UI Testing', 'Cross Browser', 'Responsive Testing', 'Validation', 'Regression Testing'],
     badge: '✔ Production Ready',
-    environment: 'Production | UAT'
   }
 ];
 
@@ -50,35 +49,56 @@ const ProjectCard = ({ project, index }) => {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    // Tilt calculations (-8deg to 8deg max)
-    const tiltX = (centerY - y) / 15;
-    const tiltY = (x - centerX) / 15;
+    // Tilt calculations (-8deg to 8deg max) with 1.03x scale and -6px lift
+    const tiltX = (centerY - y) / 12;
+    const tiltY = (x - centerX) / 12;
     
-    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+    card.style.transform = `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.03, 1.03, 1.03) translate3d(0, -6px, 0)`;
   };
 
   const handleMouseLeave = () => {
     const card = cardRef.current;
     if (!card) return;
-    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translate3d(0, 0, 0)`;
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.6, delay: index * 0.15 }}
+      initial={{ 
+        opacity: 0, 
+        scale: 0.7, 
+        y: 120, 
+        rotateX: 20, 
+        rotateY: -15, 
+        filter: "blur(12px)" 
+      }}
+      whileInView={{ 
+        opacity: 1, 
+        scale: 1, 
+        y: 0, 
+        rotateX: 0, 
+        rotateY: 0, 
+        filter: "blur(0px)" 
+      }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 90, 
+        damping: 12, 
+        mass: 0.8,
+        delay: index * 0.22 
+      }}
+      style={{ transformPerspective: 1200 }}
       className="relative group"
     >
-      {/* Glow Backdrop */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-purple-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none"></div>
+      {/* Stronger Glow Backdrop */}
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-purple-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none"></div>
 
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-md group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] transition-all duration-300 ease-out flex flex-col h-full transform-gpu glow-border"
+        className="relative bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-md hover:shadow-[0_30px_60px_rgba(168,85,247,0.18)] transition-all duration-300 ease-out flex flex-col h-full transform-gpu glow-border"
       >
         {/* Project Image Wrapper */}
         <div className="relative h-48 md:h-56 overflow-hidden">

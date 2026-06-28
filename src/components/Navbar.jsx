@@ -107,7 +107,7 @@ export const Navbar = () => {
               {activeSection === item.id && (
                 <motion.div
                   layoutId="activeIndicator"
-                  className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-500 dark:bg-purple-400 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.8)]"
+                  className="absolute bottom-[-2px] left-0 w-full h-[2px] bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.7)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}

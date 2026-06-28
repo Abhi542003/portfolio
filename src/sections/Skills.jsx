@@ -114,26 +114,58 @@ export const Skills = () => {
               viewport={{ once: true, margin: '-50px' }}
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
             >
-              {group.skills.map((skill, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={cardVariants}
-                  whileHover={{ y: -6, scale: 1.03 }}
-                  className={`glass-panel glow-border p-5 rounded-2xl flex flex-col items-center justify-center text-center border border-slate-200 dark:border-slate-800 transition-all duration-300 cursor-default group relative ${getGlowClass(skill.color)}`}
-                >
-                  {skill.currentlyLearning && (
-                    <span className="absolute top-2.5 right-2.5 text-[8px] font-bold py-0.5 px-1.5 rounded-md bg-purple-500/10 border border-purple-500/25 text-purple-600 dark:text-purple-400 uppercase tracking-wider scale-90">
-                      Learning
+              {group.skills.map((skill, idx) => {
+                const randomDelay = Math.random() * 0.35;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ 
+                      opacity: 0, 
+                      scale: 0.7, 
+                      y: 120, 
+                      rotateX: 20, 
+                      rotateY: -15, 
+                      filter: "blur(12px)" 
+                    }}
+                    whileInView={{ 
+                      opacity: 1, 
+                      scale: 1, 
+                      y: 0, 
+                      rotateX: 0, 
+                      rotateY: 0, 
+                      filter: "blur(0px)" 
+                    }}
+                    viewport={{ once: true, amount: 0.15 }}
+                    transition={{ 
+                      type: "spring", 
+                      stiffness: 90, 
+                      damping: 12, 
+                      mass: 0.8,
+                      delay: randomDelay 
+                    }}
+                    style={{ transformPerspective: 1200 }}
+                    whileHover={{ 
+                      y: -8, 
+                      scale: 1.05, 
+                      rotate: 4,
+                      transition: { duration: 0.2 }
+                    }}
+                    className={`glass-panel glow-border p-5 rounded-2xl flex flex-col items-center justify-center text-center border border-slate-200 dark:border-slate-800 transition-all duration-300 cursor-default group relative ${getGlowClass(skill.color)}`}
+                  >
+                    {skill.currentlyLearning && (
+                      <span className="absolute top-2.5 right-2.5 text-[8px] font-bold py-0.5 px-1.5 rounded-md bg-purple-500/10 border border-purple-500/25 text-purple-600 dark:text-purple-400 uppercase tracking-wider scale-90">
+                        Learning
+                      </span>
+                    )}
+                    <div className={`text-3xl mb-3 transform group-hover:scale-115 group-hover:rotate-6 transition-transform duration-300 ${getIconColorClass(skill.color)}`}>
+                      {skill.icon}
+                    </div>
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 font-heading leading-tight">
+                      {skill.name}
                     </span>
-                  )}
-                  <div className={`text-3xl mb-3 transform group-hover:scale-115 group-hover:rotate-6 transition-transform duration-300 ${getIconColorClass(skill.color)}`}>
-                    {skill.icon}
-                  </div>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 font-heading leading-tight">
-                    {skill.name}
-                  </span>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </div>
         ))}

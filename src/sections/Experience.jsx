@@ -55,17 +55,17 @@ const ExperienceCard = ({ exp, idx, activeIndex, setActiveIndex, startDate, endD
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    // Smooth 3D tilt calculation
-    const tiltX = (centerY - y) / 25;
-    const tiltY = (x - centerX) / 25;
+    // Smooth 3D tilt calculation with 1.02x scale and -5px lift
+    const tiltX = (centerY - y) / 18;
+    const tiltY = (x - centerX) / 18;
     
-    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.015, 1.015, 1.015)`;
+    card.style.transform = `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02) translate3d(0, -5px, 0)`;
   };
 
   const handleMouseLeave = () => {
     const card = cardRef.current;
     if (!card) return;
-    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translate3d(0, 0, 0)`;
   };
 
   const isActive = activeIndex === idx;
@@ -204,18 +204,45 @@ export const Experience = () => {
           return (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              initial={{ 
+                opacity: 0, 
+                scale: 0.7, 
+                y: 120, 
+                rotateX: 15, 
+                rotateY: -10, 
+                filter: "blur(12px)" 
+              }}
+              whileInView={{ 
+                opacity: 1, 
+                scale: 1, 
+                y: 0, 
+                rotateX: 0, 
+                rotateY: 0, 
+                filter: "blur(0px)" 
+              }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 90, 
+                damping: 12, 
+                mass: 0.8,
+                delay: idx * 0.22
+              }}
+              style={{ transformPerspective: 1200 }}
               className="relative group"
             >
               {/* Timeline Circle Node (Pulsing ring) */}
-              <div className={`absolute -left-[45px] md:-left-[61px] top-1.5 w-8 h-8 rounded-full border-4 bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-xs shadow-md z-20 transition-all duration-300 ${
-                activeIndex === idx 
-                  ? 'text-purple-600 dark:text-purple-400 border-purple-500/20 dark:border-purple-950 shadow-[0_0_12px_rgba(168,85,247,0.3)] scale-110' 
-                  : 'text-blue-500 dark:text-blue-400 border-slate-200 dark:border-slate-800'
-              }`}>
+              <motion.div 
+                initial={{ scale: 0.5, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 100, damping: 10, delay: idx * 0.15 }}
+                className={`absolute -left-[45px] md:-left-[61px] top-1.5 w-8 h-8 rounded-full border-4 bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-xs shadow-md z-20 transition-all duration-300 ${
+                  activeIndex === idx 
+                    ? 'text-purple-600 dark:text-purple-400 border-purple-500/20 dark:border-purple-950 shadow-[0_0_12px_rgba(168,85,247,0.5)] scale-110' 
+                    : 'text-blue-500 dark:text-blue-400 border-slate-200 dark:border-slate-800'
+                }`}
+              >
                 {activeIndex === idx && (
                   <div className="absolute inset-0 rounded-full bg-purple-500/25 animate-ping opacity-75"></div>
                 )}
@@ -224,7 +251,7 @@ export const Experience = () => {
                 ) : (
                   <FiCode className="w-3.5 h-3.5 relative z-10 group-hover:scale-125 transition-transform" />
                 )}
-              </div>
+              </motion.div>
 
               {/* Floating Date (Desktop - stacked double-line layout) */}
               <div className="hidden md:block absolute -left-[216px] top-2 w-36 text-right leading-tight font-heading">

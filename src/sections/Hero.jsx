@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
-import { FiBriefcase, FiArrowDown } from 'react-icons/fi';
 import HeroVisual from '../components/HeroVisual';
 import profilePic from '../assets/profile_picture.jpg';
 
@@ -13,10 +12,40 @@ const ROLES = [
   'Performance Tester'
 ];
 
+// Viewport-triggered animated counter
+const Counter = ({ end, suffix = '' }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    
+    let start = 0;
+    const duration = 2000; // 2 seconds
+    const incrementTime = Math.max(Math.floor(duration / end), 15);
+    
+    const timer = setInterval(() => {
+      start += Math.ceil(end / 40); // speed up counting
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(start);
+      }
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [end, isInView]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+};
+
 export const Hero = () => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [currentText, setCurrentText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [scrollOpacity, setScrollOpacity] = useState(0.6);
 
   // Typewriter effect logic
   useEffect(() => {
@@ -40,6 +69,16 @@ export const Hero = () => {
     return () => clearTimeout(timer);
   }, [currentText, isDeleting, roleIndex]);
 
+  // Scroll indicator fade out
+  useEffect(() => {
+    const handleScroll = () => {
+      const opacity = Math.max(0.6 - window.scrollY / 200, 0);
+      setScrollOpacity(opacity);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleContactClick = (e) => {
     e.preventDefault();
     const contactSection = document.getElementById('contact');
@@ -52,6 +91,45 @@ export const Hero = () => {
     }
   };
 
+  // Stagger Styler Definitions
+  const containerVars = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.12,
+      }
+    }
+  };
+
+  const wordVars = {
+    hidden: { 
+      opacity: 0, 
+      y: 60, 
+      scale: 0.6, 
+      rotateX: -45, 
+      rotateY: 20 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      rotateX: 0, 
+      rotateY: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10,
+        mass: 0.8
+      }
+    }
+  };
+
+  const socials = [
+    { href: "https://github.com", icon: <FaGithub className="w-5 h-5" />, label: "GitHub" },
+    { href: "https://linkedin.com", icon: <FaLinkedin className="w-5 h-5" />, label: "LinkedIn" },
+    { href: "mailto:rajpurohitabhijit543@gmail.com", icon: <FaEnvelope className="w-5 h-5" />, label: "Email" }
+  ];
+
   return (
     <section
       id="home"
@@ -63,19 +141,46 @@ export const Hero = () => {
         {/* ================= LEFT SIDE ================= */}
         <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 lg:pr-8">
           
-          {/* Profile Image with Glowing Double Rings */}
+          {/* Profile Image with Glowing Double Rings (Pops up with Y rotation, blur and Y-axis scale bounce) */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="relative w-40 h-40 md:w-48 md:h-48 mb-6 select-none group flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.5, filter: "blur(8px)", rotateY: 35 }}
+            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)", rotateY: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              type: "spring",
+              stiffness: 110,
+              damping: 12,
+              mass: 0.9,
+              delay: 0.1
+            }}
+            whileHover={{ scale: 1.05, rotateY: 10 }}
+            className="relative w-40 h-40 md:w-48 md:h-48 mb-6 select-none group flex items-center justify-center cursor-none"
           >
-            {/* Outer Spin Ring 1 */}
-            <div className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-purple-500 via-cyan-500 to-indigo-500 animate-spin-slow opacity-85 blur-[1px] group-hover:scale-105 transition-all duration-500"></div>
-            {/* Inner Spin Ring 2 */}
-            <div className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-cyan-400 via-emerald-400 to-purple-400 animate-spin-reverse opacity-70 blur-[3px] group-hover:scale-110 transition-all duration-500"></div>
+            {/* Rotating Neon Ring with pulsing glow */}
+            <motion.div
+              animate={{ 
+                rotate: 360,
+                boxShadow: [
+                  "0 0 15px rgba(168,85,247,0.4)",
+                  "0 0 25px rgba(34,211,238,0.7)",
+                  "0 0 15px rgba(168,85,247,0.4)"
+                ]
+              }}
+              transition={{
+                rotate: { duration: 10, repeat: Infinity, ease: "linear" },
+                boxShadow: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-purple-500 via-cyan-400 to-indigo-500 opacity-90 blur-[1.5px] z-0"
+            />
             
-            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-slate-200/50 dark:border-slate-800/80 shadow-2xl bg-white dark:bg-black p-0.5">
+            {/* Inner Spin Ring */}
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-[-4px] rounded-full bg-gradient-to-tr from-cyan-400 via-emerald-400 to-purple-400 opacity-70 blur-[2px] z-0"
+            />
+            
+            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-slate-200/50 dark:border-slate-800/80 shadow-2xl bg-white dark:bg-black p-0.5 z-10">
               <img
                 src={profilePic}
                 alt="Abhijit Rajpurohit"
@@ -93,99 +198,170 @@ export const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
             className="inline-flex items-center space-x-2 py-1 px-3.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold tracking-wide"
           >
             <span>Welcome to my QA space 🛸</span>
           </motion.div>
 
-          {/* Large Typography Title */}
+          {/* Staggered Word by Word Heading Animations */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            variants={containerVars}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
             className="space-y-1.5"
           >
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-none text-slate-900 dark:text-white font-heading">
-              Hi, I'm
-            </h1>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:via-blue-400 dark:to-cyan-400 font-heading">
-              Abhijit Rajpurohit
-            </h1>
-            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-slate-850 dark:text-slate-200 pt-2 font-heading">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-3 text-4xl md:text-6xl font-extrabold tracking-tight leading-none text-slate-900 dark:text-white font-heading">
+              {"Hi, I'm".split(" ").map((word, i) => (
+                <motion.span key={i} variants={wordVars} className="inline-block origin-bottom-left">
+                  {word}
+                </motion.span>
+              ))}
+            </div>
+            
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-4 text-5xl md:text-7xl font-black tracking-tight leading-none font-heading">
+              {"Abhijit Rajpurohit".split(" ").map((word, i) => (
+                <motion.span 
+                  key={i} 
+                  variants={wordVars} 
+                  whileHover={{
+                    textShadow: "0 0 15px rgba(168,85,247,0.5)",
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="inline-block origin-bottom-left bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:via-blue-400 dark:to-cyan-400 bg-[size:200%_auto] transition-all duration-500 cursor-default"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </div>
+
+            <motion.h2 
+              variants={wordVars}
+              className="text-xl md:text-2xl font-bold tracking-tight text-slate-850 dark:text-slate-200 pt-2 font-heading"
+            >
               <span className="bg-gradient-to-r from-purple-500 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-bold">QA Engineer</span> (Fresher)
-            </h2>
+            </motion.h2>
           </motion.div>
 
-          {/* Description */}
+          {/* Description Paragraph (Fades in with upward slide) */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
             className="max-w-md text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed font-body"
           >
             I am a passionate Fresher QA Engineer with hands-on internship experience in Manual Testing, Functional Testing, API Testing, Regression Testing, Bug Reporting and Test Case Design. I enjoy finding bugs before users do and ensuring software quality.
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons (Bounces up, Glows intensifies) */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1, delayChildren: 0.6 } }
+            }}
             className="flex flex-col sm:flex-row items-center space-y-3.5 sm:space-y-0 sm:space-x-4 w-full sm:w-auto"
           >
-            <a
+            <motion.a
               href="#contact"
               onClick={handleContactClick}
-              className="flex items-center justify-center space-x-2 py-3 px-7 rounded-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 text-white shadow-lg glow-shadow-purple hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto group"
+              variants={{
+                hidden: { opacity: 0, y: 40, scale: 0.8 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 100, damping: 10 }
+                }
+              }}
+              whileHover={{ 
+                scale: 1.04,
+                boxShadow: "0 0 25px rgba(168,85,247,0.6)"
+              }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center justify-center space-x-2 py-3.5 px-8 rounded-xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-[size:200%_auto] hover:bg-[right_center] text-white shadow-lg transition-all duration-500 w-full sm:w-auto group relative overflow-hidden"
             >
-              <span>Let's Connect</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <span className="relative z-10">Let's Connect</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 relative z-10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
-            </a>
+              {/* Ripple shine overlay */}
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            </motion.a>
 
-            <a
+            <motion.a
               href="/Abhijit_resume_QA.pdf"
               download
-              className="flex items-center justify-center space-x-2 py-3 px-7 rounded-xl font-bold glass-panel border border-slate-200 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900/60 hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
+              variants={{
+                hidden: { opacity: 0, y: 40, scale: 0.8 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 100, damping: 10 }
+                }
+              }}
+              whileHover={{ 
+                scale: 1.03,
+                boxShadow: "0 0 15px rgba(34,211,238,0.3)",
+                borderColor: "rgba(34,211,238,0.4)"
+              }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center justify-center space-x-2 py-3.5 px-8 rounded-xl font-bold glass-panel border border-slate-200 dark:border-slate-800/80 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-900/60 transition-all duration-300 w-full sm:w-auto group relative overflow-hidden"
             >
-              <span>Download Resume</span>
-            </a>
+              <span className="relative z-10">Download Resume</span>
+              <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform duration-300 relative z-10 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            </motion.a>
           </motion.div>
 
-          {/* Social Icons */}
+          {/* Social Icons (Pops one by one with rotation) */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1, delayChildren: 0.8 } }
+            }}
             className="flex items-center space-x-3.5"
           >
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-11 h-11 rounded-xl glass-panel flex items-center justify-center text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(168,85,247,0.25)] transition-all duration-300"
-              aria-label="GitHub"
-            >
-              <FaGithub className="w-5 h-5" />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-11 h-11 rounded-xl glass-panel flex items-center justify-center text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(168,85,247,0.25)] transition-all duration-300"
-              aria-label="LinkedIn"
-            >
-              <FaLinkedin className="w-5 h-5" />
-            </a>
-            <a
-              href="mailto:abhijit.rajpurohit.qa@example.com"
-              className="w-11 h-11 rounded-xl glass-panel flex items-center justify-center text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(168,85,247,0.25)] transition-all duration-300"
-              aria-label="Email"
-            >
-              <FaEnvelope className="w-5 h-5" />
-            </a>
+            {socials.map((social, idx) => (
+              <motion.a
+                key={idx}
+                href={social.href}
+                target={social.href.startsWith("mailto") ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                variants={{
+                  hidden: { opacity: 0, scale: 0.3, rotate: -45 },
+                  visible: { 
+                    opacity: 1, 
+                    scale: 1, 
+                    rotate: 0,
+                    transition: { type: "spring", stiffness: 120, damping: 8 }
+                  }
+                }}
+                whileHover={{
+                  scale: 1.15,
+                  y: -5,
+                  rotateY: 15,
+                  boxShadow: "0 0 15px rgba(168,85,247,0.35)",
+                  borderColor: "rgba(168,85,247,0.4)"
+                }}
+                className="w-11 h-11 rounded-xl glass-panel flex items-center justify-center text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(168,85,247,0.25)] transition-all duration-300"
+                aria-label={social.label}
+              >
+                {social.icon}
+              </motion.a>
+            ))}
           </motion.div>
 
         </div>
@@ -197,33 +373,81 @@ export const Hero = () => {
 
       </div>
 
-      {/* ================= HORIZONTAL STATISTICS CONTAINER ================= */}
+      {/* ================= HORIZONTAL STATISTICS CONTAINER (Individual Bouncing Glassmorphic Cards) ================= */}
       <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.12, delayChildren: 0.9 } }
+        }}
         className="w-full z-10 mt-10 lg:mt-6"
       >
-        <div className="glass-panel border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-7xl mx-auto shadow-2xl relative overflow-hidden backdrop-blur-md">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-7xl mx-auto">
           {/* Stat 1: Test Cases Written */}
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-inner">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 50, rotateY: 30, scale: 0.85 },
+              visible: { 
+                opacity: 1, 
+                y: 0, 
+                rotateY: 0, 
+                scale: 1,
+                transition: { type: "spring", stiffness: 100, damping: 12 } 
+              }
+            }}
+            whileHover={{
+              y: -8,
+              rotateY: -5,
+              borderColor: "rgba(168,85,247,0.45)",
+              boxShadow: "0 15px 30px rgba(168,85,247,0.2)"
+            }}
+            className="flex items-center space-x-4 glass-panel border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-md transition-all duration-300"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.15, rotate: 15 }}
+              className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-inner"
+            >
               <svg className="w-5.5 h-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
                 <line x1="16" y1="13" x2="8" y2="13" />
                 <polyline points="10 9 9 9 8 9" />
               </svg>
-            </div>
+            </motion.div>
             <div className="text-left">
-              <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">100+</div>
+              <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">
+                <Counter end={100} suffix="+" />
+              </div>
               <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider font-heading leading-tight">Test Cases Written</div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Stat 2: Bugs Reported */}
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-400 shadow-inner">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 50, rotateY: 30, scale: 0.85 },
+              visible: { 
+                opacity: 1, 
+                y: 0, 
+                rotateY: 0, 
+                scale: 1,
+                transition: { type: "spring", stiffness: 100, damping: 12 } 
+              }
+            }}
+            whileHover={{
+              y: -8,
+              rotateY: -5,
+              borderColor: "rgba(244,63,94,0.45)",
+              boxShadow: "0 15px 30px rgba(244,63,94,0.2)"
+            }}
+            className="flex items-center space-x-4 glass-panel border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-md transition-all duration-300"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.15, rotate: 15 }}
+              className="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-400 shadow-inner"
+            >
               <svg className="w-5.5 h-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <rect x="3" y="11" width="18" height="10" rx="2" />
                 <path d="M12 2v9" />
@@ -231,57 +455,116 @@ export const Hero = () => {
                 <path d="M6 14v4" />
                 <path d="M18 14v4" />
               </svg>
-            </div>
+            </motion.div>
             <div className="text-left">
-              <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">150+</div>
+              <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">
+                <Counter end={150} suffix="+" />
+              </div>
               <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider font-heading leading-tight">Bugs Reported</div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Stat 3: Projects Worked On */}
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 50, rotateY: 30, scale: 0.85 },
+              visible: { 
+                opacity: 1, 
+                y: 0, 
+                rotateY: 0, 
+                scale: 1,
+                transition: { type: "spring", stiffness: 100, damping: 12 } 
+              }
+            }}
+            whileHover={{
+              y: -8,
+              rotateY: -5,
+              borderColor: "rgba(59,130,246,0.45)",
+              boxShadow: "0 15px 30px rgba(59,130,246,0.2)"
+            }}
+            className="flex items-center space-x-4 glass-panel border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-md transition-all duration-300"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.15, rotate: 15 }}
+              className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner"
+            >
               <svg className="w-5.5 h-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
               </svg>
-            </div>
+            </motion.div>
             <div className="text-left">
-              <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">4</div>
+              <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">
+                <Counter end={3} />
+              </div>
               <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider font-heading leading-tight">Projects Worked On</div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Stat 4: Internship Duration */}
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow-inner">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 50, rotateY: 30, scale: 0.85 },
+              visible: { 
+                opacity: 1, 
+                y: 0, 
+                rotateY: 0, 
+                scale: 1,
+                transition: { type: "spring", stiffness: 100, damping: 12 } 
+              }
+            }}
+            whileHover={{
+              y: -8,
+              rotateY: -5,
+              borderColor: "rgba(34,211,238,0.45)",
+              boxShadow: "0 15px 30px rgba(34,211,238,0.2)"
+            }}
+            className="flex items-center space-x-4 glass-panel border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-md transition-all duration-300"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.15, rotate: 15 }}
+              className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow-inner"
+            >
               <svg className="w-5.5 h-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                 <path d="M6 12v5c0 2 2.5 3 6 3s6-1 6-3v-5" />
               </svg>
-            </div>
+            </motion.div>
             <div className="text-left">
               <div className="text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white">Present</div>
               <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider font-heading leading-tight">Internship Since May 2026</div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </motion.div>
 
-      {/* ================= BOUNCING SCROLL DOWN INDICATOR ================= */}
+      {/* ================= FUTURISTIC MOUSE SCROLL DOWN INDICATOR (Fades out smoothly on scroll) ================= */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.6 }}
-        transition={{ delay: 1 }}
-        className="flex flex-col items-center justify-center pt-8 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest pointer-events-none select-none"
+        animate={{ opacity: scrollOpacity }}
+        transition={{ duration: 0.3 }}
+        className="flex flex-col items-center justify-center pt-8 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest pointer-events-none select-none space-y-2"
+        style={{ pointerEvents: 'none' }}
       >
-        <span className="mb-2">Scroll Down</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-7 h-7 rounded-full border border-dashed border-slate-400 dark:border-slate-600 flex items-center justify-center"
-        >
-          <FiArrowDown className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-        </motion.div>
+        <div className="w-5 h-8 rounded-full border-2 border-slate-400 dark:border-slate-600 flex justify-center p-1.5">
+          <motion.div
+            animate={{
+              y: [0, 6, 0],
+              opacity: [1, 0.4, 1]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="w-1 h-1.5 bg-purple-500 dark:bg-purple-400 rounded-full"
+          />
+        </div>
+        <div className="flex flex-col items-center -space-y-1">
+          <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}>↓</motion.span>
+          <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}>↓</motion.span>
+          <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}>↓</motion.span>
+        </div>
+        <span className="font-heading font-extrabold text-[9px] tracking-widest uppercase">Explore Portfolio</span>
       </motion.div>
 
     </section>
