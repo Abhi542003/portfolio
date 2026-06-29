@@ -8,7 +8,7 @@ const Laptop = () => {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <group 
+    <group
       position={[0, -0.4, 0]}
       onPointerOver={(e) => {
         e.stopPropagation();
@@ -83,7 +83,7 @@ const Laptop = () => {
           <div className="w-[300px] h-[180px] rounded bg-black border border-slate-900 flex flex-col justify-between p-2.5 font-mono text-[8px] tracking-tight relative overflow-hidden select-none">
             {/* Grid Background */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none opacity-50 z-0"></div>
-            
+
             {/* Top Row: System Status */}
             <div className="flex items-center justify-between text-slate-400 border-b border-slate-900 pb-1.5 z-10">
               <span className="flex items-center space-x-1">
@@ -174,14 +174,15 @@ const SceneContent = () => {
     // Smoothed parallax camera tilt
     const targetRotX = mouse.y * 0.04;
     const targetRotY = mouse.x * 0.04 + autoRotY;
-    
+
     groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.06;
     groupRef.current.rotation.y += (targetRotY - groupRef.current.rotation.y) * 0.06;
 
     // Dynamic responsive scale of the laptop center-piece based on window width
     const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
     let baseScale = 1.05;
-    if (width < 768) baseScale = 0.65;
+    if (width < 480) baseScale = 0.52;
+    else if (width < 768) baseScale = 0.62;
     else if (width < 1200) baseScale = 0.78;
 
     const targetScale = active ? baseScale : 0.15;
@@ -215,16 +216,16 @@ export const HeroVisual = () => {
 
   // Performance-optimized entry settings for Mobile vs Desktop
   const initialAnim = isMobile
-    ? { opacity: 0, y: 60, scale: 0.9 }
+    ? { opacity: 0, y: 60, scale: 0.6 }
     : { opacity: 0, scale: 0.7, y: 120, rotateX: 20, rotateY: -15, filter: "blur(12px)" };
 
   const whileInViewAnim = isMobile
-    ? { opacity: 1, y: 0, scale: 1 }
+    ? { opacity: 1, y: 0, scale: 0.72 }
     : { opacity: 1, scale: 1, y: 0, rotateX: 0, rotateY: 0, filter: "blur(0px)" };
 
   return (
     <div className="relative w-full h-[480px] md:h-[600px] flex items-center justify-center select-none overflow-hidden">
-      
+
       {/* Shifting Orbs inside canvas space */}
       <div className="absolute w-[350px] h-[350px] rounded-full bg-purple-500/10 dark:bg-purple-500/15 blur-3xl absolute-center pointer-events-none z-0"></div>
       <div className="absolute w-[250px] h-[250px] rounded-full bg-cyan-500/10 dark:bg-cyan-500/10 blur-3xl absolute-center pointer-events-none translate-x-12 translate-y-12 z-0"></div>
@@ -241,19 +242,21 @@ export const HeroVisual = () => {
           <pointLight position={[5, 6, 4]} intensity={0.9} color="#22d3ee" />
           <pointLight position={[-5, 6, 4]} intensity={0.9} color="#a855f7" />
           <pointLight position={[0, -2, 2]} intensity={0.5} color="#6366f1" />
-          
+
           <SceneContent />
         </Canvas>
       </div>
 
       {/* ================= WIDGETS AND CARDS LAYER ================= */}
-      <div className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[490px] xl:max-w-[510px] h-full flex items-center justify-center pointer-events-none z-10">
-        
+      <div
+        key={isMobile ? 'mobile' : 'desktop'}
+        className="relative w-full max-w-[370px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[490px] xl:max-w-[510px] h-full flex items-center justify-center pointer-events-none z-10"
+      >
+
         {/* ================= TESTING PIPELINE (Centered at bottom to prevent overlaps) ================= */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.6 }}
           style={{ transformPerspective: 1200 }}
           className="absolute z-20 bottom-2 md:bottom-6 left-1/2 -translate-x-1/2 w-[215px] md:w-[270px] bg-slate-950/90 dark:bg-slate-950/80 border border-slate-800/80 rounded-2xl p-2.5 shadow-2xl backdrop-blur-md text-left pointer-events-auto"
@@ -288,19 +291,18 @@ export const HeroVisual = () => {
         {/* ================= FUTURISTIC QA SCANNER ================= */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.2 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-1 md:left-2 top-28 md:top-36 w-12 h-12 flex items-center justify-center cursor-none group transition-all duration-305 pointer-events-auto"
+          className="absolute z-20 left-[-4px] sm:left-1 top-44 md:top-36 w-12 h-12 flex items-center justify-center cursor-none group transition-all duration-305 pointer-events-auto"
         >
           <motion.div
-            animate={{ 
+            animate={{
               y: [0, -6, 0],
               x: [0, 4, 0]
             }}
             transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-            whileHover={{ 
+            whileHover={{
               scale: 1.1,
               boxShadow: "0 0 20px rgba(34,211,238,0.5)"
             }}
@@ -314,7 +316,7 @@ export const HeroVisual = () => {
 
             <div className="w-10 h-10 rounded-full border-2 border-cyan-400 bg-cyan-950/20 backdrop-blur-md shadow-[0_0_15px_rgba(34,211,238,0.3)] relative flex items-center justify-center overflow-hidden">
               <div className="absolute inset-0 bg-cyan-400/5 animate-pulse"></div>
-              
+
               <motion.div
                 animate={{
                   y: [-12, 12, -12]
@@ -326,12 +328,12 @@ export const HeroVisual = () => {
                 }}
                 className="absolute left-0 w-full h-[1px] bg-cyan-400 shadow-[0_0_8px_#22d3ee] z-10"
               />
-              
+
               <div className="w-3 h-3 rounded-full border border-cyan-400/80 flex items-center justify-center">
                 <div className="w-1 h-1 rounded-full bg-cyan-400 animate-ping"></div>
               </div>
             </div>
-            
+
             <div className="absolute top-9 left-9 w-6 h-1.5 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 origin-top-left rotate-45 shadow-[0_0_10px_rgba(34,211,238,0.4)]"></div>
           </motion.div>
         </motion.div>
@@ -341,11 +343,10 @@ export const HeroVisual = () => {
         {/* 1. Test Cases (Top Left) */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.8 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-1 md:left-2 top-2 md:top-6 pointer-events-auto"
+          className="absolute z-20 left-[-2px] sm:left-1 top-2 md:top-6 pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -10, 0] }}
@@ -382,11 +383,10 @@ export const HeroVisual = () => {
         {/* 2. Manual Testing (Mid Left) */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.0 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-0 md:left-1 top-[105px] md:top-[120px] pointer-events-auto"
+          className="absolute z-20 left-[-8px] sm:left-0 top-[115px] md:top-[120px] pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -8, 0] }}
@@ -415,11 +415,10 @@ export const HeroVisual = () => {
         {/* 3. Testing Projects Card (Bottom Left) */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 85, damping: 10, delay: 1.3 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-1 md:left-2 top-[195px] md:top-[215px] pointer-events-auto"
+          className="absolute z-20 left-[-4px] sm:left-1 top-[230px] md:top-[215px] pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -9, 0] }}
@@ -453,8 +452,7 @@ export const HeroVisual = () => {
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -10, scale: 0.8 }}
-                  whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                  viewport={{ once: true }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 100, damping: 9, delay: proj.delay }}
                   className="flex items-center space-x-1"
                 >
@@ -465,10 +463,9 @@ export const HeroVisual = () => {
             </div>
 
             {/* Production Ready details fades in */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 2.2 }}
               className="mt-2 pt-1 border-t border-slate-900 flex items-center justify-between text-[7px]"
             >
@@ -484,11 +481,10 @@ export const HeroVisual = () => {
         {/* 4. Bugs Reported (Top Right) */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.0 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-1 md:right-2 top-2 md:top-6 pointer-events-auto"
+          className="absolute z-20 right-[-2px] sm:right-1 top-2 md:top-6 pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -9, 0] }}
@@ -519,11 +515,10 @@ export const HeroVisual = () => {
         {/* 5. API Testing (Mid Right) */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.1 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-25 right-0 md:right-1 top-[95px] md:top-[110px] pointer-events-auto"
+          className="absolute z-25 right-[-8px] sm:right-0 top-[110px] md:top-[110px] pointer-events-auto"
         >
           <motion.div
             animate={{ y: [0, -10, 0] }}
@@ -549,14 +544,12 @@ export const HeroVisual = () => {
           </motion.div>
         </motion.div>
 
-        {/* 6. QA Radar Scanner (Bottom Right) */}
         <motion.div
           initial={initialAnim}
-          whileInView={whileInViewAnim}
-          viewport={{ once: true }}
+          animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.4 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-1 md:right-2 top-[175px] md:top-[195px] pointer-events-auto"
+          className="absolute z-20 right-[4px] sm:right-2 top-[210px] md:top-[195px] pointer-events-auto"
         >
           <motion.div
             animate={{
