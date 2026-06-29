@@ -11,35 +11,56 @@ import Achievements from './sections/Achievements';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
 import CursorFollower from './components/CursorFollower';
+import { LaunchProvider, useLaunch } from './context/LaunchContext';
+import Preloader from './components/Preloader';
+import LaunchOverlay from './components/LaunchOverlay';
 
-function App() {
+function PortfolioContent() {
+  const { launchState } = useLaunch();
+  const isOpen = launchState === 'open';
+  const showPortfolio = launchState === 'open' || launchState === 'shatter';
+
   return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothTouch: false }}>
-      <div className="relative min-h-screen bg-slate-50 dark:bg-[#030303] text-slate-900 dark:text-slate-100 selection:bg-purple-500/30 selection:text-purple-900 dark:selection:text-purple-300 transition-colors duration-500">
-        
-        {/* Custom Noise Overlay */}
-        <div className="noise-overlay" />
+    <div className={`relative min-h-screen bg-slate-50 dark:bg-[#030303] text-slate-900 dark:text-slate-100 selection:bg-purple-500/30 selection:text-purple-900 dark:selection:text-purple-300 transition-colors duration-500 ${!isOpen ? 'h-screen overflow-hidden' : ''}`}>
+      
+      {/* Custom Noise Overlay */}
+      <div className="noise-overlay" />
 
-        {/* Custom pointer glow & follower trail */}
-        <CursorFollower />
+      {/* Custom pointer glow & follower trail */}
+      <CursorFollower />
 
-        {/* Global Ambient Neon Glow Orbs */}
-        <div className="ambient-bg">
-          <div className="ambient-orb orb-1"></div>
-          <div className="ambient-orb orb-2"></div>
-          <div className="ambient-orb orb-3"></div>
-        </div>
+      {/* Console Boot Preloader Screen */}
+      <Preloader />
 
-        {/* Geometric Matrix Pattern Overlay */}
-        <div className="grid-overlay"></div>
+      {/* Space Flight R3F Animation Overlay */}
+      <LaunchOverlay />
 
-        {/* Header Navigation */}
+      {/* Global Ambient Neon Glow Orbs */}
+      <div className="ambient-bg" style={{ opacity: showPortfolio ? 1 : 0, transition: 'opacity 1.5s ease-in-out' }}>
+        <div className="ambient-orb orb-1"></div>
+        <div className="ambient-orb orb-2"></div>
+        <div className="ambient-orb orb-3"></div>
+      </div>
+
+      {/* Geometric Matrix Pattern Overlay */}
+      <div className="grid-overlay" style={{ opacity: showPortfolio ? 0.5 : 0, transition: 'opacity 1.5s ease-in-out' }}></div>
+
+      {/* Header Navigation */}
+      <div style={{ opacity: showPortfolio ? 1 : 0, pointerEvents: showPortfolio ? 'auto' : 'none', transition: 'opacity 1s ease-in-out' }}>
         <Navbar />
+      </div>
 
-        {/* Sections */}
-        <main className="relative z-10">
-          <Hero />
-          
+      {/* Sections */}
+      <main className="relative z-10">
+        <Hero />
+        
+        {/* Wrap subsequent sections to animate and reveal smoothly after launch shatter */}
+        <div style={{
+          opacity: showPortfolio ? (launchState === 'shatter' ? 0.35 : 1) : 0,
+          transform: showPortfolio ? 'translateY(0)' : 'translateY(40px)',
+          pointerEvents: showPortfolio ? 'auto' : 'none',
+          transition: 'opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="border-t border-slate-200/50 dark:border-slate-900/50"></div>
           </div>
@@ -77,13 +98,22 @@ function App() {
           </div>
           
           <Contact />
-        </main>
+          
+          {/* Footer */}
+          <Footer />
+        </div>
+      </main>
+    </div>
+  );
+}
 
-        {/* Footer */}
-        <Footer />
-        
-      </div>
-    </ReactLenis>
+function App() {
+  return (
+    <LaunchProvider>
+      <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothTouch: false }}>
+        <PortfolioContent />
+      </ReactLenis>
+    </LaunchProvider>
   );
 }
 

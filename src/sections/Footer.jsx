@@ -74,7 +74,7 @@ export const Footer = () => {
         <div className="flex flex-col items-center md:items-end space-y-3">
           <div className="flex items-center space-x-4">
             <a
-              href="https://github.com"
+              href="https://github.com/Abhi542003/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-white transition-colors"
@@ -83,7 +83,7 @@ export const Footer = () => {
               <FaGithub className="w-4 h-4" />
             </a>
             <a
-              href="https://linkedin.com"
+              href="http://linkedin.com/in/abhijit-purohit-a05117324"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-400 hover:text-purple-500 dark:text-slate-500 dark:hover:text-purple-400 transition-colors"

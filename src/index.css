@@ -382,3 +382,18 @@ html.lenis, html.lenis body {
 .cube-mesh-face.left   { transform: rotateY(-90deg) translateZ(12px); }
 .cube-mesh-face.top    { transform: rotateX( 90deg) translateZ(12px); }
 .cube-mesh-face.bottom { transform: rotateX(-90deg) translateZ(12px); }
+
+/* Button Ripple Animation */
+@keyframes btn-ripple {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+.animate-btn-ripple {
+  animation: btn-ripple 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}

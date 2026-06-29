@@ -84,7 +84,6 @@ const QACube = ({ mousePos }) => {
             position={[0, 0, 0.81]}
             fontSize={0.4}
             color="#a855f7"
-            font="https://fonts.gstatic.com/s/outfit/v11/0n7cEFsaDlVe47Z3eRM.woff"
             anchorX="center"
             anchorY="middle"
           >
@@ -97,7 +96,6 @@ const QACube = ({ mousePos }) => {
             rotation={[0, Math.PI, 0]}
             fontSize={0.4}
             color="#22d3ee"
-            font="https://fonts.gstatic.com/s/outfit/v11/0n7cEFsaDlVe47Z3eRM.woff"
             anchorX="center"
             anchorY="middle"
           >

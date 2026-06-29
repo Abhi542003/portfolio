@@ -4,6 +4,7 @@ import { FiCpu, FiGitPullRequest, FiActivity } from 'react-icons/fi';
 import project1 from '../assets/project1.jpg';
 import project2 from '../assets/project2.jpg';
 import project3 from '../assets/project3.jpg';
+import ScrollReveal from '../components/ScrollReveal';
 
 const PROJECTS_DATA = [
   {
@@ -85,10 +86,21 @@ const ProjectCard = ({ project, index }) => {
         delay: index * 0.22 
       }}
       style={{ transformPerspective: 1200 }}
-      className="relative group"
+      className="relative group h-full"
     >
       {/* Stronger Glow Backdrop */}
       <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-purple-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none"></div>
+
+      {/* Floating particles inside the card on hover */}
+      <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute top-1/2 left-[10%] w-1.5 h-1.5 rounded-full bg-cyan-400 blur-[0.5px] animate-ping" />
+        <div className="absolute top-1/4 right-[15%] w-1 h-1 rounded-full bg-purple-400 blur-[0.5px] animate-ping" style={{ animationDelay: '0.4s' }} />
+        <div className="absolute bottom-[20%] left-[30%] w-1.5 h-1.5 rounded-full bg-purple-400 blur-[0.5px] animate-ping" style={{ animationDelay: '0.8s' }} />
+        <div className="absolute bottom-[35%] right-[25%] w-1 h-1 rounded-full bg-cyan-400 blur-[0.5px] animate-ping" style={{ animationDelay: '1.2s' }} />
+      </div>
+
+      {/* Animated Glowing border accent on hover */}
+      <div className="absolute inset-0 rounded-3xl border border-transparent group-hover:border-purple-500/35 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all duration-500 pointer-events-none z-30" />
 
       <div
         ref={cardRef}
@@ -141,7 +153,7 @@ const ProjectCard = ({ project, index }) => {
                 {project.badge}
               </span>
               <span className="text-slate-500 dark:text-slate-400 font-medium">
-                {project.environment}
+                {project.environment || "Production Ready"}
               </span>
             </div>
           </div>
@@ -154,24 +166,26 @@ const ProjectCard = ({ project, index }) => {
 export const Projects = () => {
   return (
     <section id="projects" className="py-24 px-6 max-w-7xl mx-auto relative overflow-hidden">
-      
-      {/* Background decorations */}
-      <div className="absolute top-1/3 left-0 w-36 h-36 bg-purple-500/5 rounded-full blur-3xl floating-element"></div>
-      <div className="absolute bottom-1/4 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl floating-element-slow"></div>
+      <ScrollReveal>
+        
+        {/* Background decorations */}
+        <div className="absolute top-1/3 left-0 w-36 h-36 bg-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none"></div>
 
-      <div className="text-center mb-16 space-y-2">
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-          <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Projects</span>
-        </h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 mx-auto rounded-full"></div>
-      </div>
+        <div className="text-center mb-16 space-y-2">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Projects</span>
+          </h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 mx-auto rounded-full"></div>
+        </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {PROJECTS_DATA.map((project, idx) => (
-          <ProjectCard key={idx} project={project} index={idx} />
-        ))}
-      </div>
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {PROJECTS_DATA.map((project, idx) => (
+            <ProjectCard key={idx} project={project} index={idx} />
+          ))}
+        </div>
+      </ScrollReveal>
     </section>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { FiBriefcase, FiCalendar, FiMapPin, FiCode } from 'react-icons/fi';
+import ScrollReveal from '../components/ScrollReveal';
 
 const EXPERIENCE_DATA = [
   {
@@ -169,6 +170,7 @@ export const Experience = () => {
 
   return (
     <section id="experience" className="py-24 px-6 max-w-5xl mx-auto relative">
+      <ScrollReveal>
       
       {/* Decorative floating geometric shapes */}
       <div className="absolute top-10 left-5 w-24 h-24 bg-purple-500/5 rounded-full blur-xl floating-element-slow pointer-events-none"></div>
@@ -347,7 +349,7 @@ export const Experience = () => {
           Scroll to explore more
         </span>
       </div>
-
+      </ScrollReveal>
     </section>
   );
 };

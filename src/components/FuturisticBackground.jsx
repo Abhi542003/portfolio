@@ -14,21 +14,21 @@ export const FuturisticBackground = () => {
 
     // Particles array
     const particles = [];
-    const particleCount = 45;
+    const particleCount = 35;
     
     // Binary columns
     const binaryDigits = ['0', '1'];
     const binaryStreams = [];
-    const streamCount = 15;
-
+    const streamCount = 10;
+    
     // Initialize particles
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
         radius: Math.random() * 1.5 + 0.5,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
         alpha: Math.random() * 0.35 + 0.1,
       });
     }
@@ -38,7 +38,7 @@ export const FuturisticBackground = () => {
       binaryStreams.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        speed: Math.random() * 0.4 + 0.15,
+        speed: Math.random() * 0.35 + 0.15,
         char: binaryDigits[Math.floor(Math.random() * 2)],
         alpha: Math.random() * 0.12 + 0.03,
       });
@@ -79,7 +79,7 @@ export const FuturisticBackground = () => {
       ctx.fillRect(0, 0, width, height);
 
       // Draw Subtle Digital Network Grid Lines
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.015)';
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.012)';
       ctx.lineWidth = 0.5;
       const gridSize = 120;
       for (let x = 0; x < width; x += gridSize) {
@@ -119,16 +119,28 @@ export const FuturisticBackground = () => {
           ctx.fill();
         }
         
+        // Connect nearby particles to mouse cursor for interactive feel
+        const dxMouse = p.x - mouseX;
+        const dyMouse = p.y - mouseY;
+        const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+        if (distMouse < 180) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouseX, mouseY);
+          ctx.strokeStyle = `rgba(168, 85, 247, ${(1 - distMouse / 180) * 0.05})`;
+          ctx.stroke();
+        }
+
         // Digital network node link lines (connect nearby particles)
         particles.forEach((other) => {
           const dx = p.x - other.x;
           const dy = p.y - other.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
+          if (dist < 140) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = `rgba(34, 211, 238, ${(1 - dist / 150) * 0.02})`;
+            ctx.strokeStyle = `rgba(34, 211, 238, ${(1 - dist / 140) * 0.025})`;
             ctx.stroke();
           }
         });

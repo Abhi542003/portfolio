@@ -6,9 +6,62 @@ import { motion } from 'framer-motion';
 // 3D Laptop with embedded interactive dashboard
 const Laptop = () => {
   const [hovered, setHovered] = useState(false);
+  const [passedCount, setPassedCount] = useState(142);
+  const [apiTime, setApiTime] = useState(120);
+  const [pipelineState, setPipelineState] = useState("ACTIVE");
+  const [apiStatus, setApiStatus] = useState("200 OK");
+  const [progressWidth, setProgressWidth] = useState(100);
+  const [terminalText, setTerminalText] = useState("Deployment Successful");
+  const failedCount = 0;
+
+  useEffect(() => {
+    let progressTimer;
+    let cycleTimer;
+
+    const startCycle = () => {
+      setPipelineState("RUNNING");
+      setProgressWidth(0);
+      setTerminalText("Running QA...");
+
+      // Smooth progress bar sweep
+      let currentWidth = 0;
+      progressTimer = setInterval(() => {
+        currentWidth += 4;
+        if (currentWidth >= 100) {
+          clearInterval(progressTimer);
+          setProgressWidth(100);
+          setPipelineState("ACTIVE");
+          setTerminalText("██████████ 100% Deployment Successful");
+          
+          setPassedCount(prev => {
+            const next = prev + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3);
+            return Math.max(135, Math.min(149, next));
+          });
+          setApiTime(Math.floor(Math.random() * 45) + 85);
+          setApiStatus(Math.random() > 0.1 ? "200 OK" : "202 ACCEPT");
+        } else {
+          setProgressWidth(currentWidth);
+          if (currentWidth > 75) {
+            setTerminalText("████████░░ 80% Validating...");
+          } else if (currentWidth > 40) {
+            setTerminalText("████░░░░░░ 40% Analyzing...");
+          }
+        }
+      }, 100);
+    };
+
+    // Cycle every 5.5 seconds
+    cycleTimer = setInterval(startCycle, 5500);
+    startCycle(); // Run immediately
+
+    return () => {
+      clearInterval(progressTimer);
+      clearInterval(cycleTimer);
+    };
+  }, []);
 
   return (
-    <group
+    <group 
       position={[0, -0.4, 0]}
       onPointerOver={(e) => {
         e.stopPropagation();
@@ -24,29 +77,29 @@ const Laptop = () => {
         <boxGeometry args={[2.4, 0.05, 1.5]} />
         <meshPhysicalMaterial
           color="#0b0f19"
-          roughness={0.35}
-          metalness={0.85}
+          roughness={0.25}
+          metalness={0.9}
           emissive="#22d3ee"
-          emissiveIntensity={hovered ? 0.25 : 0.08}
+          emissiveIntensity={hovered ? 0.35 : 0.12}
         />
       </mesh>
 
       {/* Laptop Keyboard Area */}
       <mesh position={[0, -0.39, 0.02]}>
         <boxGeometry args={[2.2, 0.015, 0.65]} />
-        <meshStandardMaterial color="#161b2c" roughness={0.6} />
+        <meshStandardMaterial color="#161b2c" roughness={0.5} />
       </mesh>
 
       {/* Laptop Trackpad */}
       <mesh position={[0, -0.39, 0.55]}>
         <boxGeometry args={[0.55, 0.015, 0.35]} />
-        <meshStandardMaterial color="#2c354e" roughness={0.4} />
+        <meshStandardMaterial color="#2c354e" roughness={0.35} />
       </mesh>
 
       {/* Screen Hinge */}
       <mesh position={[0, -0.39, -0.65]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.035, 0.035, 2.1, 16]} />
-        <meshStandardMaterial color="#0b0f19" roughness={0.5} />
+        <meshStandardMaterial color="#0a0e1a" roughness={0.4} />
       </mesh>
 
       {/* Screen Bezel & Lid (slightly tilted back) */}
@@ -54,86 +107,106 @@ const Laptop = () => {
         {/* Screen Bezel Frame */}
         <mesh position={[0, 0.76, -0.02]}>
           <boxGeometry args={[2.4, 1.52, 0.04]} />
-          <meshPhysicalMaterial color="#0b0f19" roughness={0.4} metalness={0.8} />
+          <meshPhysicalMaterial 
+            color="#0b0f19" 
+            roughness={0.25} 
+            metalness={0.9}
+            emissive="#a855f7"
+            emissiveIntensity={hovered ? 0.35 : 0.15}
+          />
         </mesh>
 
         {/* Screen Display Panel */}
         <mesh position={[0, 0.76, 0.005]}>
           <boxGeometry args={[2.3, 1.42, 0.015]} />
-          <meshStandardMaterial color="#000000" roughness={0.9} />
+          <meshStandardMaterial color="#020205" roughness={0.95} />
         </mesh>
 
         {/* Glow backdrop behind lid */}
         <mesh position={[0, 0.76, -0.04]}>
           <planeGeometry args={[2.3, 1.4]} />
-          <meshBasicMaterial color="#22d3ee" transparent opacity={hovered ? 0.35 : 0.12} />
+          <meshBasicMaterial color="#22d3ee" transparent opacity={hovered ? 0.45 : 0.16} />
         </mesh>
+
+        {/* Dynamic Point Light from Screen to Keyboard */}
+        <pointLight
+          position={[0, 0.76, 0.2]}
+          intensity={hovered ? 1.8 : 1.0}
+          distance={3.5}
+          color="#22d3ee"
+        />
 
         {/* Interactive HTML Dashboard */}
         <Html
           transform
-          distanceFactor={1.38}
+          distanceFactor={1.2}
           position={[0, 0.76, 0.02]}
           style={{
-            width: '300px',
-            height: '180px',
+            width: '360px',
+            height: '216px',
             pointerEvents: 'auto',
           }}
         >
-          <div className="w-[300px] h-[180px] rounded bg-black border border-slate-900 flex flex-col justify-between p-2.5 font-mono text-[8px] tracking-tight relative overflow-hidden select-none">
+          <div className="w-[360px] h-[216px] rounded bg-black border border-slate-900/60 flex flex-col justify-between p-3.5 font-mono text-[9px] tracking-tight relative overflow-hidden select-none shadow-[inset_0_0_15px_rgba(34,211,238,0.05)]">
             {/* Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none opacity-50 z-0"></div>
-
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:12px_12px] pointer-events-none opacity-50 z-0"></div>
+            
             {/* Top Row: System Status */}
             <div className="flex items-center justify-between text-slate-400 border-b border-slate-900 pb-1.5 z-10">
-              <span className="flex items-center space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                <span className="text-emerald-400 font-bold uppercase text-[7px]">Pipeline active</span>
+              <span className="flex items-center space-x-1.5">
+                <span className={`w-1.5 h-1.5 rounded-full ${pipelineState === "RUNNING" ? "bg-cyan-400 animate-ping" : "bg-emerald-500 animate-pulse"}`}></span>
+                <span className={`font-bold uppercase text-[7px] ${pipelineState === "RUNNING" ? "text-cyan-400" : "text-emerald-400"}`}>
+                  {pipelineState === "RUNNING" ? "Running Test Suite" : "Pipeline Active"}
+                </span>
               </span>
-              <span className="py-0.5 px-1.5 rounded bg-purple-500/20 text-purple-400 text-[6.5px] font-extrabold border border-purple-500/30 uppercase tracking-widest">
+              <span className="py-0.5 px-1.5 rounded bg-purple-500/10 text-purple-400 text-[6.5px] font-extrabold border border-purple-500/25 uppercase tracking-widest">
                 PROD ENV
               </span>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-left my-auto z-10 pl-1">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-left my-auto z-10 pl-1">
               <div className="flex flex-col">
-                <span className="text-slate-500 text-[6px] font-bold uppercase">Passed</span>
-                <span className="text-[10px] text-emerald-400 font-black">142</span>
+                <span className="text-slate-500 text-[6.5px] font-bold uppercase">Passed Tests</span>
+                <span className="text-[11px] text-emerald-400 font-black tracking-wide transition-all duration-300">
+                  {passedCount}
+                </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-slate-500 text-[6px] font-bold uppercase">Failed</span>
-                <span className="text-[10px] text-rose-500 font-black">0</span>
+                <span className="text-slate-500 text-[6.5px] font-bold uppercase">Failed Tests</span>
+                <span className="text-[11px] text-rose-500 font-black tracking-wide">
+                  {failedCount}
+                </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-slate-500 text-[6px] font-bold uppercase">Running</span>
-                <span className="text-[10px] text-cyan-400 font-black animate-pulse">Active</span>
+                <span className="text-slate-500 text-[6.5px] font-bold uppercase">Response Time</span>
+                <span className="text-[11px] text-cyan-400 font-black transition-all duration-300">
+                  {apiTime} ms
+                </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-slate-500 text-[6px] font-bold uppercase">API Response</span>
-                <span className="text-[10px] text-emerald-400 font-bold">200 OK</span>
+                <span className="text-slate-500 text-[6.5px] font-bold uppercase">API Response</span>
+                <span className={`text-[10px] font-bold transition-all duration-300 ${apiStatus === "200 OK" ? "text-emerald-400" : "text-amber-400"}`}>
+                  {apiStatus}
+                </span>
               </div>
             </div>
 
             {/* Progress & Lower Bar */}
-            <div className="w-full space-y-1 z-10 pt-1 border-t border-slate-900">
-              <div className="flex items-center justify-between text-[7px] text-slate-500 font-bold uppercase">
-                <span>Smoke Test Status:</span>
-                <span className="text-emerald-400 font-bold">Passed</span>
-              </div>
+            <div className="w-full space-y-1.5 z-10 pt-1 border-t border-slate-900">
               {/* Progress bar */}
               <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden relative">
-                <motion.div
-                  animate={{
-                    width: ["0%", "100%"]
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
+                <div
+                  style={{ width: `${progressWidth}%`, transition: 'width 0.12s ease-out' }}
                   className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400"
                 />
+              </div>
+              {/* Terminal Console Text */}
+              <div className="flex items-center space-x-1 font-mono text-[6px] text-slate-400/90 bg-slate-950/70 border border-slate-900/80 px-1.5 py-0.5 rounded uppercase">
+                <span className="text-cyan-400 font-bold">root@QA-01:~$</span>
+                <span className={pipelineState === "RUNNING" ? "text-slate-350" : "text-emerald-400 font-semibold"}>
+                  {terminalText}
+                </span>
               </div>
             </div>
           </div>
@@ -168,25 +241,34 @@ const SceneContent = () => {
   useFrame((state) => {
     if (!groupRef.current) return;
 
-    // Auto swaying rotation to look alive on mobile/touch interfaces
-    const autoRotY = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.04;
+    // Base premium 3D profile rotations
+    const baseRotX = 0.14; // Look slightly down on keyboard
+    const baseRotY = -0.22; // Rotate slightly to the right for 3D side profile
 
-    // Smoothed parallax camera tilt
-    const targetRotX = mouse.y * 0.04;
-    const targetRotY = mouse.x * 0.04 + autoRotY;
+    // Auto swaying rotation and breathing float
+    const time = state.clock.getElapsedTime();
+    const autoRotY = Math.sin(time * 0.4) * 0.03;
+    const autoRotX = Math.cos(time * 0.4) * 0.015;
 
+    // Very subtle mouse parallax camera tilt + base 3D angle
+    const targetRotX = mouse.y * 0.06 + baseRotX + autoRotX;
+    const targetRotY = mouse.x * 0.06 + baseRotY + autoRotY;
+    
     groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.06;
     groupRef.current.rotation.y += (targetRotY - groupRef.current.rotation.y) * 0.06;
 
-    // Dynamic responsive scale of the laptop center-piece based on window width
+    // Dynamic responsive scale (+20% size increase)
     const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    let baseScale = 1.05;
-    if (width < 480) baseScale = 0.52;
-    else if (width < 768) baseScale = 0.62;
-    else if (width < 1200) baseScale = 0.78;
+    let baseScale = 1.26;
+    if (width < 480) baseScale = 0.62;
+    else if (width < 768) baseScale = 0.74;
+    else if (width < 1200) baseScale = 0.94;
+
+    // Floating breathing animation + upward position adjustment (0.08 units higher)
+    const breatheY = Math.sin(time * 0.6) * 0.05 + 0.08;
 
     const targetScale = active ? baseScale : 0.15;
-    const targetY = active ? (Math.sin(state.clock.getElapsedTime() * 0.5) * 0.04 - 0.25) : -2;
+    const targetY = active ? breatheY : -2;
 
     groupRef.current.scale.x += (targetScale - groupRef.current.scale.x) * 0.05;
     groupRef.current.scale.y += (targetScale - groupRef.current.scale.y) * 0.05;
@@ -199,6 +281,71 @@ const SceneContent = () => {
       {/* 3D Laptop is the ONLY centerpiece mesh */}
       <Laptop />
     </group>
+  );
+};
+
+// 3D Hover & Floating Card component with premium physics
+const HoverCard = ({ children, className, style, delay, initialAnim, whileInViewAnim }) => {
+  const cardRef = useRef(null);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left - width / 2;
+    const mouseY = e.clientY - rect.top - height / 2;
+    
+    // Calculate rotation angles (max 8 degrees)
+    const rX = -(mouseY / (height / 2)) * 8;
+    const rY = (mouseX / (width / 2)) * 8;
+    
+    setRotateX(rX);
+    setRotateY(rY);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setRotateX(0);
+    setRotateY(0);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={initialAnim}
+      animate={whileInViewAnim}
+      transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay }}
+      style={{
+        ...style,
+        transformPerspective: 1000,
+      }}
+      className={className}
+    >
+      <motion.div
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        animate={{
+          rotateX: isHovered ? rotateX : 0,
+          rotateY: isHovered ? rotateY : 0,
+          scale: isHovered ? 1.05 : 1,
+          y: isHovered ? 0 : [0, -6, 0],
+        }}
+        transition={isHovered ? { type: "tween", ease: "easeOut", duration: 0.15 } : {
+          y: { duration: 4 + Math.random() * 2, repeat: Infinity, ease: "easeInOut" },
+          rotateX: { type: "spring", stiffness: 100, damping: 15 },
+          rotateY: { type: "spring", stiffness: 100, damping: 15 },
+          scale: { duration: 0.2 }
+        }}
+        className="h-full w-full pointer-events-auto"
+      >
+        {children}
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -224,7 +371,7 @@ export const HeroVisual = () => {
     : { opacity: 1, scale: 1, y: 0, rotateX: 0, rotateY: 0, filter: "blur(0px)" };
 
   return (
-    <div className="relative w-full h-[480px] md:h-[600px] flex items-center justify-center select-none overflow-hidden">
+    <div className="relative w-full h-[520px] md:h-[600px] flex items-center justify-center select-none overflow-hidden">
 
       {/* Shifting Orbs inside canvas space */}
       <div className="absolute w-[350px] h-[350px] rounded-full bg-purple-500/10 dark:bg-purple-500/15 blur-3xl absolute-center pointer-events-none z-0"></div>
@@ -288,13 +435,13 @@ export const HeroVisual = () => {
           </div>
         </motion.div>
 
-        {/* ================= FUTURISTIC QA SCANNER ================= */}
+        {/* ================= FUTURISTIC QA SCANNER (Left Side decoration, positioned between top/bottom cards) ================= */}
         <motion.div
           initial={initialAnim}
           animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.2 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-[-4px] sm:left-1 top-44 md:top-36 w-12 h-12 flex items-center justify-center cursor-none group transition-all duration-305 pointer-events-auto"
+          className="absolute z-20 left-[-4px] sm:left-1 top-[160px] md:top-[170px] w-12 h-12 flex items-center justify-center cursor-none group transition-all duration-305 pointer-events-auto"
         >
           <motion.div
             animate={{
@@ -338,29 +485,17 @@ export const HeroVisual = () => {
           </motion.div>
         </motion.div>
 
-        {/* ================= FLOATING GLASS CARDS (Left-Side vertical stack layout to avoid pipeline overlap) ================= */}
+        {/* ================= FLOATING GLASS CARDS (Symmetrical natural layout around the laptop) ================= */}
 
-        {/* 1. Test Cases (Top Left) */}
-        <motion.div
-          initial={initialAnim}
-          animate={whileInViewAnim}
-          transition={{ type: "spring", stiffness: 90, damping: 12, delay: 0.8 }}
-          style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-[-2px] sm:left-1 top-2 md:top-6 pointer-events-auto"
+        {/* 1. Test Cases (Top Center) */}
+        <HoverCard
+          initialAnim={initialAnim}
+          whileInViewAnim={whileInViewAnim}
+          delay={0.8}
+          className="absolute z-20 left-1/2 -translate-x-1/2 top-[6px] md:top-[15px] pointer-events-auto"
         >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5.0, repeat: Infinity, ease: 'easeInOut' }}
-            whileHover={{
-              scale: 1.05,
-              rotateY: 8,
-              rotateX: -5,
-              borderColor: "rgba(168,85,247,0.45)",
-              boxShadow: "0 15px 30px rgba(168,85,247,0.25)"
-            }}
-            className="glass-panel p-3 rounded-2xl border border-purple-500/20 w-[120px] md:w-[150px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] transition-all duration-305"
-          >
-            <div className="flex items-center space-x-1.5 mb-1">
+          <div className="glass-panel p-3 rounded-2xl border border-purple-500/20 w-[120px] md:w-[150px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:border-purple-500/40 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] transition-all duration-300">
+            <div className="flex items-center space-x-1.5 mb-1.5">
               <span className="p-0.5 rounded-lg bg-purple-500/20 text-purple-400">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -377,61 +512,37 @@ export const HeroVisual = () => {
                 <path d="M 0,25 Q 20,5 40,20 T 80,10 T 100,5" fill="none" stroke="#a855f7" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </HoverCard>
 
-        {/* 2. Manual Testing (Mid Left) */}
-        <motion.div
-          initial={initialAnim}
-          animate={whileInViewAnim}
-          transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.0 }}
-          style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-[-8px] sm:left-0 top-[115px] md:top-[120px] pointer-events-auto"
+        {/* 2. Manual Testing (Top Left) */}
+        <HoverCard
+          initialAnim={initialAnim}
+          whileInViewAnim={whileInViewAnim}
+          delay={1.0}
+          className="absolute z-20 left-[-8px] sm:left-4 top-[35px] md:top-[60px] pointer-events-auto"
         >
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-            whileHover={{
-              scale: 1.05,
-              rotateY: 8,
-              rotateX: 5,
-              borderColor: "rgba(34,211,238,0.45)",
-              boxShadow: "0 15px 30px rgba(34,211,238,0.25)"
-            }}
-            className="glass-panel p-3 rounded-xl border border-cyan-500/20 w-[110px] md:w-[130px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] text-left transition-all duration-305"
-          >
-            <div className="flex items-center space-x-1">
+          <div className="glass-panel p-3 rounded-2xl border border-cyan-500/20 w-[110px] md:w-[130px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] text-left hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] dark:hover:shadow-[0_0_25px_rgba(34,211,238,0.25)] transition-all duration-300">
+            <div className="flex items-center space-x-1.5 mb-1.5">
               <span className="p-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-heading">Manual Test</span>
             </div>
-            <div className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1 pl-4">Test Design</div>
-          </motion.div>
-        </motion.div>
+            <div className="text-[10px] font-bold text-slate-800 dark:text-slate-200 pl-5">Test Design</div>
+          </div>
+        </HoverCard>
 
         {/* 3. Testing Projects Card (Bottom Left) */}
-        <motion.div
-          initial={initialAnim}
-          animate={whileInViewAnim}
-          transition={{ type: "spring", stiffness: 85, damping: 10, delay: 1.3 }}
-          style={{ transformPerspective: 1200 }}
-          className="absolute z-20 left-[-4px] sm:left-1 top-[230px] md:top-[215px] pointer-events-auto"
+        <HoverCard
+          initialAnim={initialAnim}
+          whileInViewAnim={whileInViewAnim}
+          delay={1.3}
+          className="absolute z-20 left-[-12px] sm:left-0 top-[260px] md:top-[280px] pointer-events-auto"
         >
-          <motion.div
-            animate={{ y: [0, -9, 0] }}
-            transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-            whileHover={{
-              scale: 1.05,
-              rotateY: 5,
-              rotateX: -5,
-              borderColor: "rgba(168,85,247,0.45)",
-              boxShadow: "0 15px 30px rgba(168,85,247,0.25)"
-            }}
-            className="glass-panel p-3.5 rounded-2xl border border-purple-500/20 w-[145px] md:w-[185px] shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-305 backdrop-blur-md"
-          >
+          <div className="glass-panel p-3.5 rounded-2xl border border-purple-500/20 w-[145px] md:w-[185px] shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-purple-500/40 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] transition-all duration-305 backdrop-blur-md">
             <div className="flex items-center space-x-1.5 mb-1.5 border-b border-slate-900 pb-1">
               <span className="p-0.5 rounded bg-purple-500/20 text-purple-400">
                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -472,33 +583,18 @@ export const HeroVisual = () => {
               <span className="font-bold text-slate-500 uppercase tracking-wider">Prod Ready</span>
               <span className="py-0.5 px-1 rounded-full bg-emerald-500/10 text-emerald-400 font-extrabold border border-emerald-500/20">3 Validated</span>
             </motion.div>
-          </motion.div>
-        </motion.div>
-
-
-        {/* ================= FLOATING GLASS CARDS (Right-Side vertical stack layout to avoid pipeline overlap) ================= */}
+          </div>
+        </HoverCard>
 
         {/* 4. Bugs Reported (Top Right) */}
-        <motion.div
-          initial={initialAnim}
-          animate={whileInViewAnim}
-          transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.0 }}
-          style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-[-2px] sm:right-1 top-2 md:top-6 pointer-events-auto"
+        <HoverCard
+          initialAnim={initialAnim}
+          whileInViewAnim={whileInViewAnim}
+          delay={1.0}
+          className="absolute z-20 right-[-8px] sm:right-4 top-[35px] md:top-[60px] pointer-events-auto"
         >
-          <motion.div
-            animate={{ y: [0, -9, 0] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-            whileHover={{
-              scale: 1.05,
-              rotateY: -8,
-              rotateX: -5,
-              borderColor: "rgba(244,63,94,0.45)",
-              boxShadow: "0 15px 30px rgba(244,63,94,0.25)"
-            }}
-            className="glass-panel p-3 rounded-2xl border border-pink-500/20 w-[120px] md:w-[150px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] transition-all duration-305"
-          >
-            <div className="flex items-center space-x-1.5 mb-1">
+          <div className="glass-panel p-3 rounded-2xl border border-pink-500/20 w-[120px] md:w-[150px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:border-pink-500/40 hover:shadow-[0_0_20px_rgba(244,63,94,0.15)] dark:hover:shadow-[0_0_25px_rgba(244,63,94,0.25)] transition-all duration-300">
+            <div className="flex items-center space-x-1.5 mb-1.5">
               <span className="p-0.5 rounded-lg bg-pink-500/25 text-pink-400">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <rect x="3" y="11" width="18" height="10" rx="2" />
@@ -509,29 +605,17 @@ export const HeroVisual = () => {
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-heading">Bugs Logged</span>
             </div>
             <div className="text-xs md:text-sm font-bold text-slate-900 dark:text-white font-heading">150+</div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </HoverCard>
 
-        {/* 5. API Testing (Mid Right) */}
-        <motion.div
-          initial={initialAnim}
-          animate={whileInViewAnim}
-          transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.1 }}
-          style={{ transformPerspective: 1200 }}
-          className="absolute z-25 right-[-8px] sm:right-0 top-[110px] md:top-[110px] pointer-events-auto"
+        {/* 5. API Testing (Right) */}
+        <HoverCard
+          initialAnim={initialAnim}
+          whileInViewAnim={whileInViewAnim}
+          delay={1.1}
+          className="absolute z-25 right-[-12px] sm:right-0 top-[165px] md:top-[190px] pointer-events-auto"
         >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
-            whileHover={{
-              scale: 1.05,
-              rotateY: -8,
-              rotateX: 5,
-              borderColor: "rgba(59,130,246,0.45)",
-              boxShadow: "0 15px 30px rgba(59,130,246,0.25)"
-            }}
-            className="glass-panel p-3 rounded-xl border border-blue-500/20 w-[115px] md:w-[140px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] text-left transition-all duration-305"
-          >
+          <div className="glass-panel p-3 rounded-2xl border border-blue-500/20 w-[115px] md:w-[140px] shadow-[0_8px_32px_rgba(0,0,0,0.2)] text-left hover:border-blue-500/40 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_0_25px_rgba(59,130,246,0.25)] transition-all duration-305">
             <div className="flex items-center space-x-1.5">
               <span className="p-0.5 rounded bg-blue-500/20 text-blue-400">
                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -540,16 +624,17 @@ export const HeroVisual = () => {
               </span>
               <span className="text-[8.5px] font-bold text-slate-400 uppercase tracking-wider font-heading">API Testing</span>
             </div>
-            <div className="text-[10px] font-semibold text-slate-850 dark:text-slate-200 mt-1 pl-4 font-heading">Postman</div>
-          </motion.div>
-        </motion.div>
+            <div className="text-[10px] font-semibold text-slate-850 dark:text-slate-200 mt-1.5 pl-5 font-heading">Postman</div>
+          </div>
+        </HoverCard>
 
+        {/* ================= QA RADAR SCANNER (Right Side decoration, positioned under API card) ================= */}
         <motion.div
           initial={initialAnim}
           animate={whileInViewAnim}
           transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.4 }}
           style={{ transformPerspective: 1200 }}
-          className="absolute z-20 right-[4px] sm:right-2 top-[210px] md:top-[195px] pointer-events-auto"
+          className="absolute z-20 right-[4px] sm:right-2 top-[260px] md:top-[280px] pointer-events-auto"
         >
           <motion.div
             animate={{

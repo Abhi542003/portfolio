@@ -76,7 +76,7 @@ export const CursorFollower = () => {
         setHoverType('resume');
       } else if (href.includes('mailto') || id.includes('contact') || classes.includes('contact') || text.includes('contact')) {
         setHoverType('contact');
-      } else if (classes.includes('project') || el.closest('#projects') || classes.includes('glass-panel')) {
+      } else if (classes.includes('project') || el.closest('#projects')) {
         // Project card hover
         setHoverType('project');
       } else {

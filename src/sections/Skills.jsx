@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaClipboardCheck, FaRobot, FaDatabase, FaGitAlt, FaSyncAlt, 
@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { SiSelenium, SiPostman, SiJira } from 'react-icons/si';
 import { FiCheckSquare } from 'react-icons/fi';
+import ScrollReveal from '../components/ScrollReveal';
 
 const SKILLS_DATA = [
   {
@@ -55,16 +56,6 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 20 } 
-  }
-};
-
 const getGlowClass = (color) => {
   switch (color) {
     case 'purple': return 'hover:border-purple-500/40 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] dark:hover:shadow-[0_0_30px_rgba(168,85,247,0.3)]';
@@ -85,98 +76,99 @@ const getIconColorClass = (color) => {
   }
 };
 
+const SkillCard = ({ skill, randomDelay }) => {
+  const cardRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    
+    // Tilt limit to 18 degrees
+    const rotateX = -(y / rect.height) * 18;
+    const rotateY = (x / rect.width) * 18;
+    cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.04, 1.04, 1.04) translateY(-6px)`;
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateY(0px)`;
+  };
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      onMouseLeave={isMobile ? undefined : handleMouseLeave}
+      initial={isMobile
+        ? { opacity: 0, y: 35, scale: 0.95 }
+        : { opacity: 0, scale: 0.75, y: 90, rotateX: 20, rotateY: -15, filter: "blur(6px)" }
+      }
+      whileInView={{ opacity: 1, scale: 1, y: 0, rotateX: 0, rotateY: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ type: "spring", stiffness: 90, damping: 12, mass: 0.8, delay: randomDelay }}
+      style={{ transformStyle: "preserve-3d", transition: "transform 0.15s ease-out" }}
+      className={`glass-panel glow-border p-5 rounded-2xl flex flex-col items-center justify-center text-center border border-slate-200 dark:border-slate-800 cursor-default group relative ${getGlowClass(skill.color)}`}
+    >
+      {skill.currentlyLearning && (
+        <span className="absolute top-2.5 right-2.5 text-[8px] font-bold py-0.5 px-1.5 rounded-md bg-purple-500/10 border border-purple-500/25 text-purple-600 dark:text-purple-400 uppercase tracking-wider scale-90">
+          Learning
+        </span>
+      )}
+      <div className={`text-3xl mb-3 transform group-hover:scale-115 group-hover:rotate-6 transition-transform duration-305 ${getIconColorClass(skill.color)}`}>
+        {skill.icon}
+      </div>
+      <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 font-heading leading-tight">
+        {skill.name}
+      </span>
+    </motion.div>
+  );
+};
+
 export const Skills = () => {
   return (
     <section id="skills" className="py-24 px-6 max-w-7xl mx-auto relative overflow-hidden">
-      
-      {/* Decorative Orbs */}
-      <div className="absolute top-1/2 left-0 w-28 h-28 bg-purple-500/5 rounded-full blur-2xl floating-element"></div>
-      <div className="absolute bottom-5 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl floating-element-slow"></div>
+      <ScrollReveal>
+        
+        {/* Decorative background orbs */}
+        <div className="absolute top-1/2 left-0 w-28 h-28 bg-purple-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute bottom-5 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none"></div>
 
-      <div className="text-center mb-16 space-y-2">
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Skills &amp; <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Toolkit</span>
-        </h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 mx-auto rounded-full"></div>
-      </div>
+        <div className="text-center mb-16 space-y-2">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Skills &amp; <span className="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-heading">Toolkit</span>
+          </h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 mx-auto rounded-full"></div>
+        </div>
 
-      <div className="space-y-12">
-        {SKILLS_DATA.map((group, groupIdx) => (
-          <div key={groupIdx} className="space-y-4">
-            <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300 font-heading pl-2 border-l-2 border-purple-500">
-              {group.category}
-            </h3>
-            
-            <motion.div 
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-50px' }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
-            >
-              {group.skills.map((skill, idx) => {
-                const randomDelay = Math.random() * 0.35;
-                const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-                return (
-                  <motion.div
-                    key={idx}
-                    initial={isMobile
-                      ? { opacity: 0, y: 50, scale: 0.95 }
-                      : { 
-                          opacity: 0, 
-                          scale: 0.7, 
-                          y: 120, 
-                          rotateX: 20, 
-                          rotateY: -15, 
-                          filter: "blur(12px)" 
-                        }
-                    }
-                    whileInView={isMobile
-                      ? { opacity: 1, y: 0, scale: 1 }
-                      : { 
-                          opacity: 1, 
-                          scale: 1, 
-                          y: 0, 
-                          rotateX: 0, 
-                          rotateY: 0, 
-                          filter: "blur(0px)" 
-                        }
-                    }
-                    viewport={{ once: true, amount: 0.15 }}
-                    transition={{ 
-                      type: "spring", 
-                      stiffness: 90, 
-                      damping: 12, 
-                      mass: 0.8,
-                      delay: randomDelay 
-                    }}
-                    style={{ transformPerspective: 1200 }}
-                    whileHover={{ 
-                      y: -8, 
-                      scale: 1.05, 
-                      rotate: 4,
-                      transition: { duration: 0.2 }
-                    }}
-                    className={`glass-panel glow-border p-5 rounded-2xl flex flex-col items-center justify-center text-center border border-slate-200 dark:border-slate-800 transition-all duration-300 cursor-default group relative ${getGlowClass(skill.color)}`}
-                  >
-                    {skill.currentlyLearning && (
-                      <span className="absolute top-2.5 right-2.5 text-[8px] font-bold py-0.5 px-1.5 rounded-md bg-purple-500/10 border border-purple-500/25 text-purple-600 dark:text-purple-400 uppercase tracking-wider scale-90">
-                        Learning
-                      </span>
-                    )}
-                    <div className={`text-3xl mb-3 transform group-hover:scale-115 group-hover:rotate-6 transition-transform duration-300 ${getIconColorClass(skill.color)}`}>
-                      {skill.icon}
-                    </div>
-                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 font-heading leading-tight">
-                      {skill.name}
-                    </span>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-        ))}
-      </div>
+        <div className="space-y-12">
+          {SKILLS_DATA.map((group, groupIdx) => (
+            <div key={groupIdx} className="space-y-4">
+              <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300 font-heading pl-2 border-l-2 border-purple-500">
+                {group.category}
+              </h3>
+              
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-50px' }}
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
+              >
+                {group.skills.map((skill, idx) => {
+                  const randomDelay = Math.random() * 0.25;
+                  return (
+                    <SkillCard key={idx} skill={skill} randomDelay={randomDelay} />
+                  );
+                })}
+              </motion.div>
+            </div>
+          ))}
+        </div>
+      </ScrollReveal>
     </section>
   );
 };
