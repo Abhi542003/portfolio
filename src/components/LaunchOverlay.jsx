@@ -331,18 +331,21 @@ export const LaunchOverlay = () => {
   return (
     <div className="fixed inset-0 z-[99998] pointer-events-none select-none">
       
-      {/* Space starfield & purple fog background stays visible at ALL times */}
+      {/* Ambient glow ALWAYS visible — no black, just purple/cyan fog */}
       {(launchState === 'initial' || launchState === 'launching' || launchState === 'flying' || launchState === 'impact' || launchState === 'shatter') && (
-        <div className="absolute inset-0 bg-[#030303]/95 z-[-1] transition-all duration-1000">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:35px_35px] pointer-events-none opacity-40"></div>
-          <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] rounded-full bg-purple-950/20 blur-[150px] animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/3 w-[300px] h-[300px] rounded-full bg-cyan-950/20 blur-[150px] animate-pulse"></div>
+        <div className="absolute inset-0 z-[-1] transition-all duration-1000" style={{ backdropFilter: launchState === 'flying' || launchState === 'launching' ? 'blur(2px)' : 'none' }}>
+          {/* Grid scanlines */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.018)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:35px_35px] pointer-events-none opacity-50"></div>
+          {/* Purple and cyan fog orbs — bright enough to be clearly visible */}
+          <div className="absolute top-1/4 left-1/4 w-[450px] h-[450px] rounded-full bg-purple-600/20 blur-[120px] animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-cyan-500/15 blur-[120px] animate-pulse" style={{animationDelay:'1.2s'}}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-700/10 blur-[180px]"></div>
         </div>
       )}
 
-      {/* 3D Canvas rendering flight and shards explosion */}
+      {/* 3D Canvas rendering flight and shards — transparent background */}
       {(launchState === 'flying' || launchState === 'launching' || launchState === 'impact' || launchState === 'shatter') && (
-        <div className="absolute inset-0 z-50 w-full h-full bg-[#030303]/20">
+        <div className="absolute inset-0 z-50 w-full h-full">
           <Canvas
             camera={{ position: [0, 0, 5], fov: 50 }}
             gl={{ antialias: true, alpha: true }}

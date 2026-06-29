@@ -166,11 +166,13 @@ export const Hero = () => {
     >
       {/* INITIAL SCREEN (Before Click / Open) */}
       {!isOpen && (
-        <div className="fixed inset-0 z-[9997] flex flex-col items-center justify-center space-y-8 bg-[#030303] w-full h-full px-6 select-none pointer-events-auto">
-          {/* Scanlines & Grid lines background overlay for the welcome screen */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:35px_35px] pointer-events-none opacity-40"></div>
-          <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] rounded-full bg-purple-950/15 blur-[150px] pointer-events-none animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/3 w-[300px] h-[300px] rounded-full bg-cyan-950/15 blur-[150px] pointer-events-none animate-pulse"></div>
+        <div className="fixed inset-0 z-[9997] flex flex-col items-center justify-center space-y-8 w-full h-full px-6 select-none pointer-events-auto">
+          {/* Animated grid scanlines */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.018)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:35px_35px] pointer-events-none opacity-50"></div>
+          {/* Bright ambient purple glow orbs — always visible */}
+          <div className="absolute top-1/4 left-1/4 w-[450px] h-[450px] rounded-full bg-purple-600/20 blur-[120px] pointer-events-none animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-cyan-500/15 blur-[120px] pointer-events-none animate-pulse" style={{animationDelay:'1.2s'}}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-700/10 blur-[180px] pointer-events-none"></div>
           
           {/* Center Profile Picture */}
           <motion.div
