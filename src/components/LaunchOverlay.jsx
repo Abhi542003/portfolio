@@ -119,22 +119,61 @@ const Spacecraft = ({ progress }) => {
   );
 };
 
-// Custom Glass Fragment with opacity fade decay physics
+// Creates a flat irregular glass triangle shard
+const makeShardGeometry = () => {
+  const geo = new THREE.BufferGeometry();
+
+  // 3–5 sided irregular flat polygon (all in XY plane, thin on Z)
+  const sides = Math.floor(Math.random() * 3) + 3; // 3,4 or 5 sides
+  const positions = [];
+  const normals = [];
+  const uvs = [];
+
+  // Center vertex + ring of outer vertices = fan triangles
+  const rBase = Math.random() * 0.55 + 0.3;  // large: 0.3 to 0.85 units
+  const verts = [[0, 0, 0]];
+  for (let i = 0; i <= sides; i++) {
+    const angle = (i / sides) * Math.PI * 2 + (Math.random() - 0.5) * 0.7;
+    const r = rBase * (0.65 + Math.random() * 0.6);
+    verts.push([Math.cos(angle) * r, Math.sin(angle) * r, 0]);
+  }
+
+  for (let i = 1; i < verts.length - 1; i++) {
+    // Front face
+    positions.push(...verts[0], ...verts[i], ...verts[i + 1]);
+    normals.push(0, 0, 1,  0, 0, 1,  0, 0, 1);
+    uvs.push(0.5, 0.5,  0, 1,  1, 1);
+    // Back face (flip winding for double sided)
+    positions.push(...verts[0], ...verts[i + 1], ...verts[i]);
+    normals.push(0, 0, -1,  0, 0, -1,  0, 0, -1);
+    uvs.push(0.5, 0.5,  1, 1,  0, 1);
+  }
+
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('normal',   new THREE.Float32BufferAttribute(normals, 3));
+  geo.setAttribute('uv',       new THREE.Float32BufferAttribute(uvs, 2));
+  return geo;
+};
+
+// Flat triangular glass shard with crystal-clear material
 const Shard = ({ id, startPos }) => {
   const meshRef = useRef();
   const materialRef = useRef();
 
-  // Randomized angular and linear ejection velocities
+  const [geo] = useState(() => makeShardGeometry());
+
+  // Randomized angular and linear ejection velocities — strong outward burst
   const [velocity] = useState(() => {
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 0.12 + 0.05;
+    const speed = Math.random() * 0.22 + 0.07;
+    const zSpeed = Math.random() * 0.28 + 0.06; // Explode hard toward viewer
     return {
       x: Math.cos(angle) * speed,
       y: Math.sin(angle) * speed,
-      z: Math.random() * 0.15 + 0.08, // Explode outward toward user
-      rx: Math.random() * 0.2 - 0.1,
-      ry: Math.random() * 0.2 - 0.1,
-      rz: Math.random() * 0.2 - 0.1,
+      z: zSpeed,
+      rx: (Math.random() - 0.5) * 0.14,
+      ry: (Math.random() - 0.5) * 0.14,
+      rz: (Math.random() - 0.5) * 0.08,
     };
   });
 
@@ -143,35 +182,43 @@ const Shard = ({ id, startPos }) => {
     meshRef.current.position.x += velocity.x;
     meshRef.current.position.y += velocity.y;
     meshRef.current.position.z += velocity.z;
-    meshRef.current.rotation.x += velocity.rx * 1.5;
-    meshRef.current.rotation.y += velocity.ry * 1.5;
+    meshRef.current.rotation.x += velocity.rx;
+    meshRef.current.rotation.y += velocity.ry;
     meshRef.current.rotation.z += velocity.rz;
 
-    // Decelerate shards slightly
-    velocity.x *= 0.985;
-    velocity.y *= 0.985;
+    // Gravity pull & deceleration
+    velocity.y -= 0.0012;
+    velocity.x *= 0.988;
+    velocity.z *= 0.975;
 
-    // Slower fade of opacity instead of shrinking scale
+    // Fade opacity gradually — keep visible longer
     if (materialRef.current) {
-      materialRef.current.opacity = Math.max(0, materialRef.current.opacity - 0.0035);
+      materialRef.current.opacity = Math.max(0, materialRef.current.opacity - 0.0022);
     }
   });
 
-  // Glass physical properties with reflections
-  const color = id % 3 === 0 ? "#a855f7" : id % 3 === 1 ? "#22d3ee" : "#d8b4fe";
+  // Crystal-clear glass look — very slight tint, mostly transparent
+  const tint = id % 5 === 0 ? '#cce4ff'
+    : id % 5 === 1 ? '#e8d8ff'
+    : id % 5 === 2 ? '#ddf5ff'
+    : id % 5 === 3 ? '#ffffff'
+    : '#d4c8ff';
 
   return (
-    <mesh ref={meshRef} position={startPos}>
-      <coneGeometry args={[Math.random() * 0.18 + 0.08, Math.random() * 0.4 + 0.15, 3]} />
+    <mesh ref={meshRef} position={startPos} geometry={geo}>
       <meshPhysicalMaterial
         ref={materialRef}
-        transmission={0.92}
-        ior={1.62}
-        roughness={0.02}
-        metalness={0.15}
-        color={color}
+        color={tint}
+        transmission={0.96}
+        ior={1.72}
+        thickness={0.04}
+        roughness={0.04}
+        metalness={0.08}
+        reflectivity={1.0}
         transparent
-        opacity={0.75}
+        opacity={0.88}
+        side={THREE.DoubleSide}
+        envMapIntensity={2.5}
       />
     </mesh>
   );
@@ -279,16 +326,19 @@ export const LaunchOverlay = () => {
         setImpactFlash(true);
         setShowCrack(true);
 
-        // Generate 100 glass shards with random ejection coordinates
-        const shardCount = isMobile ? 55 : 100;
+        // Generate 130 flat glass shards spread across full screen
+        const shardCount = isMobile ? 65 : 130;
         const pieces = [];
         for (let i = 0; i < shardCount; i++) {
+          // Spread from center outward in a radial pattern + random scatter
+          const angle = (i / shardCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+          const dist = Math.random() * 2.2; // 0 to 2.2 units from center
           pieces.push({
             id: i,
             startPos: [
-              (Math.random() - 0.5) * 1.6,
-              (Math.random() - 0.5) * 1.6,
-              4.0 // Eject close to camera
+              Math.cos(angle) * dist * 0.9 + (Math.random() - 0.5) * 0.4,
+              Math.sin(angle) * dist * 0.7 + (Math.random() - 0.5) * 0.4,
+              3.8 + Math.random() * 0.4 // Eject from near camera plane
             ]
           });
         }
@@ -351,9 +401,11 @@ export const LaunchOverlay = () => {
             gl={{ antialias: true, alpha: true }}
             dpr={[1, isMobile ? 1 : 1.5]}
           >
-            <ambientLight intensity={0.9} />
-            <pointLight position={[5, 5, 5]} intensity={1.5} color="#a855f7" />
-            <pointLight position={[-5, -5, 5]} intensity={1.5} color="#22d3ee" />
+            <ambientLight intensity={1.4} />
+            <pointLight position={[0, 3, 3]} intensity={4.0} color="#ffffff" />
+            <pointLight position={[5, 5, 5]} intensity={3.0} color="#a855f7" />
+            <pointLight position={[-5, -5, 5]} intensity={3.0} color="#22d3ee" />
+            <pointLight position={[0, 0, 2]} intensity={2.5} color="#8b5cf6" />
             
             <SceneWrapper launchState={launchState} progress={flightProgress}>
               {/* Spaceship element */}
@@ -361,9 +413,12 @@ export const LaunchOverlay = () => {
                 <Spacecraft progress={flightProgress} />
               )}
 
-              {/* Glass shards */}
+              {/* Glass shards — with bright impact light at center */}
               {(launchState === 'shatter' || launchState === 'impact') && (
                 <group>
+                  {/* Bright white-purple impact glow at impact point */}
+                  <pointLight position={[0, 0, 3.5]} intensity={6} color="#ffffff" distance={8} />
+                  <pointLight position={[0, 0, 3.5]} intensity={4} color="#a855f7" distance={6} />
                   {shards.map((piece) => (
                     <Shard key={piece.id} id={piece.id} startPos={piece.startPos} />
                   ))}
