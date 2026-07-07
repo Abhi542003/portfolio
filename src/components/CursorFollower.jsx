@@ -281,16 +281,35 @@ export const CursorFollower = () => {
         style={{ x: xTrail1, y: yTrail1 }}
       />
 
+      {/* Hover Ripple Ring */}
+      <AnimatePresence>
+        {linkHovered && (
+          <motion.div
+            key="hover-ripple"
+            initial={{ scale: 0.6, opacity: 0.6 }}
+            animate={{ scale: [0.6, 2.8], opacity: [0.6, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeOut"
+            }}
+            className="fixed rounded-full pointer-events-none z-[99995] border border-cyan-400/40 w-6 h-6 -translate-x-1/2 -translate-y-1/2"
+            style={{ left: xMain, top: yMain }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Main Large Glowing Backdrop (soft follow glow) */}
       <motion.div
         className="custom-cursor-glow hidden md:block"
         style={{
           x: xMain,
           y: yMain,
-          scale: linkHovered ? 1.6 : 1,
+          scale: linkHovered ? 2.2 : 1.2,
           background: linkHovered
-            ? (hoverType === 'project' ? 'radial-gradient(circle, rgba(248, 113, 113, 0.18) 0%, transparent 70%)' : hoverType === 'contact' ? 'radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(34, 211, 238, 0.18) 0%, transparent 70%)')
-            : 'radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%)'
+            ? (hoverType === 'project' ? 'radial-gradient(circle, rgba(248, 113, 113, 0.28) 0%, transparent 70%)' : hoverType === 'contact' ? 'radial-gradient(circle, rgba(168, 85, 247, 0.28) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(34, 211, 238, 0.28) 0%, transparent 70%)')
+            : 'radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)'
         }}
       />
 

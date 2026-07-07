@@ -15,7 +15,10 @@ const NAV_ITEMS = [
 ];
 
 const SECTION_IDS = NAV_ITEMS.map((item) => item.id);
-const OBSERVER_OPTIONS = { threshold: 0.25 };
+const OBSERVER_OPTIONS = { 
+  threshold: 0.05,
+  rootMargin: '-25% 0px -35% 0px'
+};
 
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();

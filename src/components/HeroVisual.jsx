@@ -2,63 +2,152 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
+import * as THREE from 'three';
+
+// Premium under-laptop ambient glow texture builder
+const glowTexture = (() => {
+  if (typeof window === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  
+  const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gradient.addColorStop(0, 'rgba(34, 211, 238, 0.75)'); // Cyan center
+  gradient.addColorStop(0.5, 'rgba(168, 85, 247, 0.35)'); // Purple mid-glow
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 256);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  return texture;
+})();
+
+const PHASES = [
+  {
+    key: 'smoke',
+    title: 'Smoke Test Suite',
+    command: 'npm run test:smoke',
+    status: 'RUNNING',
+    successLabel: 'Passed',
+    statLabel1: 'Response Time',
+    statValue1: '14ms',
+    statLabel2: 'Checked',
+    statValue2: '12/12 Endpoints',
+    logs: [
+      '🚀 Initiating Smoke Test suite...',
+      '🔍 GET /health -> 200 OK (8ms)',
+      '🔍 GET /auth/session -> 200 OK (16ms)',
+      '🔍 POST /order/checkout -> 201 Created (120ms)',
+      '✅ All smoke tests passed successfully.'
+    ]
+  },
+  {
+    key: 'regression',
+    title: 'Regression Suite',
+    command: 'npm run test:regression',
+    status: 'RUNNING',
+    successLabel: 'Passed',
+    statLabel1: 'Executed',
+    statValue1: '142 / 142',
+    statLabel2: 'Bugs Found',
+    statValue2: '0',
+    logs: [
+      '⚡ Running regression suite...',
+      '✔ OAuth2 Login flow... PASSED',
+      '✔ Cart persistence... PASSED',
+      '✔ Payment integration... PASSED',
+      '✅ Regression suite run clean.'
+    ]
+  },
+  {
+    key: 'build',
+    title: 'Build Verification',
+    command: 'npm run build:verify',
+    status: 'VERIFYING',
+    successLabel: 'Verified',
+    statLabel1: 'Image Hash',
+    statValue1: 'sha256:ea21c',
+    statLabel2: 'Bundle Size',
+    statValue2: '1.24 MB',
+    logs: [
+      '📦 Verifying build artifacts...',
+      'Checking JS bundle maps... OK',
+      'Oxlint syntax check... 0 errors',
+      'Docker container compilation... OK',
+      '✅ Build artifacts validated.'
+    ]
+  },
+  {
+    key: 'deploy',
+    title: 'Deployment Stage',
+    command: 'npm run deploy:prod',
+    status: 'DEPLOYING',
+    successLabel: 'Success',
+    statLabel1: 'Pods Active',
+    statValue1: '3 / 3',
+    statLabel2: 'Traffic Route',
+    statValue2: 'Canary 100%',
+    logs: [
+      '🚢 Uploading assets to CDN...',
+      'Updating Kubernetes replica sets...',
+      'Verifying cluster pods health... OK',
+      'Traffic routing update complete...',
+      '🚀 Deployment successful!'
+    ]
+  }
+];
 
 // 3D Laptop with embedded interactive dashboard
 const Laptop = () => {
   const [hovered, setHovered] = useState(false);
-  const [passedCount, setPassedCount] = useState(142);
-  const [apiTime, setApiTime] = useState(120);
-  const [pipelineState, setPipelineState] = useState("ACTIVE");
-  const [apiStatus, setApiStatus] = useState("200 OK");
-  const [progressWidth, setProgressWidth] = useState(100);
-  const [terminalText, setTerminalText] = useState("Deployment Successful");
-  const failedCount = 0;
+  const [phaseIndex, setPhaseIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [consoleLogs, setConsoleLogs] = useState([]);
+
+  const currentPhase = PHASES[phaseIndex];
 
   useEffect(() => {
-    let progressTimer;
-    let cycleTimer;
-
-    const startCycle = () => {
-      setPipelineState("RUNNING");
-      setProgressWidth(0);
-      setTerminalText("Running QA...");
-
-      // Smooth progress bar sweep
-      let currentWidth = 0;
-      progressTimer = setInterval(() => {
-        currentWidth += 4;
-        if (currentWidth >= 100) {
-          clearInterval(progressTimer);
-          setProgressWidth(100);
-          setPipelineState("ACTIVE");
-          setTerminalText("██████████ 100% Deployment Successful");
-          
-          setPassedCount(prev => {
-            const next = prev + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3);
-            return Math.max(135, Math.min(149, next));
-          });
-          setApiTime(Math.floor(Math.random() * 45) + 85);
-          setApiStatus(Math.random() > 0.1 ? "200 OK" : "202 ACCEPT");
-        } else {
-          setProgressWidth(currentWidth);
-          if (currentWidth > 75) {
-            setTerminalText("████████░░ 80% Validating...");
-          } else if (currentWidth > 40) {
-            setTerminalText("████░░░░░░ 40% Analyzing...");
-          }
-        }
-      }, 100);
-    };
-
-    // Cycle every 5.5 seconds
-    cycleTimer = setInterval(startCycle, 5500);
-    startCycle(); // Run immediately
-
+    let timer;
+    const activePhase = PHASES[phaseIndex];
+    setProgress(0);
+    setConsoleLogs([`root@QA-01:~$ ${activePhase.command}`]);
+    
+    const duration = 4500;
+    const intervalTime = 100;
+    const steps = duration / intervalTime;
+    let currentStep = 0;
+    
+    timer = setInterval(() => {
+      currentStep++;
+      const currentProgress = Math.min(100, Math.floor((currentStep / steps) * 100));
+      setProgress(currentProgress);
+      
+      const logMilestones = activePhase.logs;
+      const visibleLogsCount = Math.min(
+        logMilestones.length,
+        Math.floor((currentProgress / 100) * (logMilestones.length + 1))
+      );
+      
+      const activeLogs = logMilestones.slice(0, visibleLogsCount);
+      setConsoleLogs([
+        `root@QA-01:~$ ${activePhase.command}`,
+        ...activeLogs
+      ]);
+      
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        setTimeout(() => {
+          setPhaseIndex((prev) => (prev + 1) % PHASES.length);
+        }, 1000);
+      }
+    }, intervalTime);
+    
     return () => {
-      clearInterval(progressTimer);
-      clearInterval(cycleTimer);
+      clearInterval(timer);
     };
-  }, []);
+  }, [phaseIndex]);
 
   return (
     <group 
@@ -77,10 +166,12 @@ const Laptop = () => {
         <boxGeometry args={[2.4, 0.05, 1.5]} />
         <meshPhysicalMaterial
           color="#0b0f19"
-          roughness={0.25}
-          metalness={0.9}
+          roughness={0.15}
+          metalness={0.85}
+          clearcoat={1.0}
+          clearcoatRoughness={0.1}
           emissive="#22d3ee"
-          emissiveIntensity={hovered ? 0.35 : 0.12}
+          emissiveIntensity={hovered ? 0.45 : 0.15}
         />
       </mesh>
 
@@ -109,10 +200,12 @@ const Laptop = () => {
           <boxGeometry args={[2.4, 1.52, 0.04]} />
           <meshPhysicalMaterial 
             color="#0b0f19" 
-            roughness={0.25} 
-            metalness={0.9}
+            roughness={0.15} 
+            metalness={0.85}
+            clearcoat={1.0}
+            clearcoatRoughness={0.1}
             emissive="#a855f7"
-            emissiveIntensity={hovered ? 0.35 : 0.15}
+            emissiveIntensity={hovered ? 0.45 : 0.18}
           />
         </mesh>
 
@@ -147,16 +240,16 @@ const Laptop = () => {
             pointerEvents: 'auto',
           }}
         >
-          <div className="w-[360px] h-[216px] rounded bg-black border border-slate-900/60 flex flex-col justify-between p-3.5 font-mono text-[9px] tracking-tight relative overflow-hidden select-none shadow-[inset_0_0_15px_rgba(34,211,238,0.05)]">
+          <div className="w-[360px] h-[216px] rounded bg-black border border-slate-900/60 flex flex-col justify-between p-3.5 font-mono text-[9px] tracking-tight relative overflow-hidden select-none shadow-[inset_0_0_15px_rgba(34,211,238,0.05)] text-white">
             {/* Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:12px_12px] pointer-events-none opacity-50 z-0"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:12px_12px] pointer-events-none opacity-40 z-0"></div>
             
             {/* Top Row: System Status */}
             <div className="flex items-center justify-between text-slate-400 border-b border-slate-900 pb-1.5 z-10">
               <span className="flex items-center space-x-1.5">
-                <span className={`w-1.5 h-1.5 rounded-full ${pipelineState === "RUNNING" ? "bg-cyan-400 animate-ping" : "bg-emerald-500 animate-pulse"}`}></span>
-                <span className={`font-bold uppercase text-[7px] ${pipelineState === "RUNNING" ? "text-cyan-400" : "text-emerald-400"}`}>
-                  {pipelineState === "RUNNING" ? "Running Test Suite" : "Pipeline Active"}
+                <span className={`w-1.5 h-1.5 rounded-full ${progress < 100 ? "bg-cyan-400 animate-ping" : "bg-emerald-500 animate-pulse"}`}></span>
+                <span className={`font-bold uppercase text-[7px] ${progress < 100 ? "text-cyan-400" : "text-emerald-400"}`}>
+                  {progress < 100 ? currentPhase.status : currentPhase.successLabel}
                 </span>
               </span>
               <span className="py-0.5 px-1.5 rounded bg-purple-500/10 text-purple-400 text-[6.5px] font-extrabold border border-purple-500/25 uppercase tracking-widest">
@@ -167,27 +260,15 @@ const Laptop = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-left my-auto z-10 pl-1">
               <div className="flex flex-col">
-                <span className="text-slate-500 text-[6.5px] font-bold uppercase">Passed Tests</span>
-                <span className="text-[11px] text-emerald-400 font-black tracking-wide transition-all duration-300">
-                  {passedCount}
+                <span className="text-slate-500 text-[6.5px] font-bold uppercase">{currentPhase.statLabel1}</span>
+                <span className="text-[11px] text-purple-400 font-black tracking-wide">
+                  {currentPhase.statValue1}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-slate-500 text-[6.5px] font-bold uppercase">Failed Tests</span>
-                <span className="text-[11px] text-rose-500 font-black tracking-wide">
-                  {failedCount}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-slate-500 text-[6.5px] font-bold uppercase">Response Time</span>
-                <span className="text-[11px] text-cyan-400 font-black transition-all duration-300">
-                  {apiTime} ms
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-slate-500 text-[6.5px] font-bold uppercase">API Response</span>
-                <span className={`text-[10px] font-bold transition-all duration-300 ${apiStatus === "200 OK" ? "text-emerald-400" : "text-amber-400"}`}>
-                  {apiStatus}
+                <span className="text-slate-550 text-[6.5px] font-bold uppercase">{currentPhase.statLabel2}</span>
+                <span className="text-[11px] text-cyan-400 font-black tracking-wide">
+                  {currentPhase.statValue2}
                 </span>
               </div>
             </div>
@@ -197,16 +278,24 @@ const Laptop = () => {
               {/* Progress bar */}
               <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden relative">
                 <div
-                  style={{ width: `${progressWidth}%`, transition: 'width 0.12s ease-out' }}
+                  style={{ width: `${progress}%`, transition: 'width 0.12s ease-out' }}
                   className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400"
                 />
               </div>
               {/* Terminal Console Text */}
-              <div className="flex items-center space-x-1 font-mono text-[6px] text-slate-400/90 bg-slate-950/70 border border-slate-900/80 px-1.5 py-0.5 rounded uppercase">
-                <span className="text-cyan-400 font-bold">root@QA-01:~$</span>
-                <span className={pipelineState === "RUNNING" ? "text-slate-350" : "text-emerald-400 font-semibold"}>
-                  {terminalText}
-                </span>
+              <div className="flex flex-col space-y-0.5 font-mono text-[6px] text-slate-400 bg-slate-950/80 border border-slate-900/80 p-1.5 rounded h-[65px] overflow-hidden text-left">
+                {consoleLogs.map((log, idx) => (
+                  <div key={idx} className="truncate">
+                    <span className="text-cyan-400 mr-1">root@QA-01:~$</span>
+                    <span>{log.startsWith('root@QA-01') ? log.replace('root@QA-01:~$ ', '') : log}</span>
+                  </div>
+                ))}
+                {progress < 100 && (
+                  <div className="text-cyan-400 flex items-center">
+                    <span className="mr-1">root@QA-01:~$</span>
+                    <span className="animate-pulse">_</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -257,12 +346,12 @@ const SceneContent = () => {
     groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.06;
     groupRef.current.rotation.y += (targetRotY - groupRef.current.rotation.y) * 0.06;
 
-    // Dynamic responsive scale (+20% size increase)
+    // Dynamic responsive scale (+10-15% size increase)
     const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    let baseScale = 1.26;
-    if (width < 480) baseScale = 0.62;
-    else if (width < 768) baseScale = 0.74;
-    else if (width < 1200) baseScale = 0.94;
+    let baseScale = 1.42;
+    if (width < 480) baseScale = 0.70;
+    else if (width < 768) baseScale = 0.84;
+    else if (width < 1200) baseScale = 1.06;
 
     // Floating breathing animation + upward position adjustment (0.08 units higher)
     const breatheY = Math.sin(time * 0.6) * 0.05 + 0.08;
@@ -278,6 +367,19 @@ const SceneContent = () => {
 
   return (
     <group ref={groupRef}>
+      {/* Soft Cyan and Purple Glow Plane Under Laptop */}
+      {glowTexture && (
+        <mesh position={[0, -0.45, 0.1]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[3.2, 2.2]} />
+          <meshBasicMaterial
+            map={glowTexture}
+            transparent
+            opacity={0.3}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
       {/* 3D Laptop is the ONLY centerpiece mesh */}
       <Laptop />
     </group>
@@ -332,14 +434,24 @@ const HoverCard = ({ children, className, style, delay, initialAnim, whileInView
         animate={{
           rotateX: isHovered ? rotateX : 0,
           rotateY: isHovered ? rotateY : 0,
+          rotate: isHovered ? 0 : [0.8, -0.8, 0.8], // 1-2 degrees subtle rotate
           scale: isHovered ? 1.05 : 1,
-          y: isHovered ? 0 : [0, -6, 0],
+          y: isHovered ? -4 : [0, -8, 0],
+          boxShadow: isHovered 
+            ? "0 12px 30px rgba(168, 85, 247, 0.25)" 
+            : [
+                "0 8px 32px rgba(0,0,0,0.15)",
+                "0 8px 32px rgba(168, 85, 247, 0.08)",
+                "0 8px 32px rgba(0,0,0,0.15)"
+              ]
         }}
-        transition={isHovered ? { type: "tween", ease: "easeOut", duration: 0.15 } : {
-          y: { duration: 4 + Math.random() * 2, repeat: Infinity, ease: "easeInOut" },
-          rotateX: { type: "spring", stiffness: 100, damping: 15 },
-          rotateY: { type: "spring", stiffness: 100, damping: 15 },
-          scale: { duration: 0.2 }
+        transition={isHovered ? { type: "tween", ease: "easeOut", duration: 0.25 } : {
+          y: { duration: 5 + Math.random() * 2, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: 6 + Math.random() * 3, repeat: Infinity, ease: "easeInOut" },
+          boxShadow: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+          rotateX: { type: "spring", stiffness: 80, damping: 12 },
+          rotateY: { type: "spring", stiffness: 80, damping: 12 },
+          scale: { type: "spring", stiffness: 100, damping: 15 }
         }}
         className="h-full w-full pointer-events-auto"
       >
@@ -389,6 +501,7 @@ export const HeroVisual = () => {
           <pointLight position={[5, 6, 4]} intensity={0.9} color="#22d3ee" />
           <pointLight position={[-5, 6, 4]} intensity={0.9} color="#a855f7" />
           <pointLight position={[0, -2, 2]} intensity={0.5} color="#6366f1" />
+          <directionalLight position={[0, 5, 5]} intensity={0.65} color="#ffffff" />
 
           <SceneContent />
         </Canvas>
@@ -677,6 +790,86 @@ export const HeroVisual = () => {
               }}
               className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_#22d3ee]"
             />
+          </motion.div>
+        </motion.div>
+
+        {/* ================= DECORATIVE FLOATING SEARCH & QA ICONS ================= */}
+        {/* Magnifying Glass (Search Icon) */}
+        <motion.div
+          initial={initialAnim}
+          animate={whileInViewAnim}
+          transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.5 }}
+          className="absolute z-20 left-[-15px] sm:left-2 top-[105px] md:top-[115px] pointer-events-auto magnetic"
+          style={{ transformPerspective: 1200 }}
+        >
+          <motion.div
+            animate={{
+              y: [0, -6, 0],
+              rotate: [0, 360],
+              scale: [1, 1.05, 1],
+              boxShadow: [
+                "0 4px 12px rgba(34, 211, 238, 0.1)",
+                "0 4px 20px rgba(34, 211, 238, 0.25)",
+                "0 4px 12px rgba(34, 211, 238, 0.1)"
+              ]
+            }}
+            transition={{
+              y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+              boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            }}
+            whileHover={{
+              scale: 1.15,
+              rotate: 15,
+              borderColor: "rgba(34,211,238,0.5)",
+              boxShadow: "0 0 25px rgba(34,211,238,0.45)"
+            }}
+            className="w-9 h-9 rounded-xl glass-panel border border-cyan-500/25 flex items-center justify-center transition-all duration-300"
+          >
+            <svg className="w-4.5 h-4.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </motion.div>
+        </motion.div>
+
+        {/* QA Check Icon */}
+        <motion.div
+          initial={initialAnim}
+          animate={whileInViewAnim}
+          transition={{ type: "spring", stiffness: 90, damping: 12, delay: 1.7 }}
+          className="absolute z-20 right-[-15px] sm:right-2 top-[225px] md:top-[235px] pointer-events-auto magnetic"
+          style={{ transformPerspective: 1200 }}
+        >
+          <motion.div
+            animate={{
+              y: [0, 6, 0],
+              rotate: [0, -360],
+              scale: [1, 1.05, 1],
+              boxShadow: [
+                "0 4px 12px rgba(168, 85, 247, 0.1)",
+                "0 4px 20px rgba(168, 85, 247, 0.25)",
+                "0 4px 12px rgba(168, 85, 247, 0.1)"
+              ]
+            }}
+            transition={{
+              y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
+              rotate: { duration: 24, repeat: Infinity, ease: "linear" },
+              scale: { duration: 3.5, repeat: Infinity, ease: "easeInOut" },
+              boxShadow: { duration: 3.5, repeat: Infinity, ease: "easeInOut" }
+            }}
+            whileHover={{
+              scale: 1.15,
+              rotate: -15,
+              borderColor: "rgba(168,85,247,0.5)",
+              boxShadow: "0 0 25px rgba(168,85,247,0.45)"
+            }}
+            className="w-9 h-9 rounded-xl glass-panel border border-purple-500/25 flex items-center justify-center transition-all duration-300"
+          >
+            <svg className="w-4.5 h-4.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </motion.div>
         </motion.div>
 

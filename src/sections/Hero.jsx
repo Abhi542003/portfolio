@@ -45,7 +45,6 @@ const Counter = ({ end, suffix = '' }) => {
 
 export const Hero = () => {
   const { launchState, startLaunch } = useLaunch();
-  const [btnHovered, setBtnHovered] = useState(false);
   const isOpen = launchState === 'open' || launchState === 'shatter';
   const handleLaunchClick = () => {
     playStartup();
@@ -177,23 +176,19 @@ export const Hero = () => {
           {/* Center Profile Picture */}
           <motion.div
             layoutId="hero-profile-pic"
-            className="relative w-44 h-44 md:w-52 md:h-52 select-none group flex items-center justify-center"
+            className="relative w-44 h-44 md:w-52 md:h-52 select-none group flex items-center justify-center cursor-none"
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 100, damping: 12 }}
           >
             {/* Rotating Neon Ring with pulsing glow */}
             <motion.div
               animate={{
                 rotate: 360,
-                boxShadow: [
-                  "0 0 20px rgba(168,85,247,0.5)",
-                  "0 0 35px rgba(34,211,238,0.8)",
-                  "0 0 20px rgba(168,85,247,0.5)"
-                ]
               }}
+              className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-purple-500 via-cyan-400 via-indigo-500 to-cyan-300 opacity-90 blur-[1.5px] z-0 transition-shadow duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_45px_rgba(168,85,247,0.8)]"
               transition={{
-                rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-                boxShadow: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                rotate: { duration: 10, repeat: Infinity, ease: "linear" }
               }}
-              className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-purple-500 via-cyan-400 via-indigo-500 to-cyan-300 opacity-90 blur-[1.5px] z-0"
             />
             
             {/* Inner Spin Ring */}
@@ -201,6 +196,38 @@ export const Hero = () => {
               animate={{ rotate: -360 }}
               transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
               className="absolute inset-[-4px] rounded-full bg-gradient-to-tr from-cyan-400 via-emerald-400 to-purple-400 opacity-70 blur-[2px] z-0"
+            />
+
+            {/* Orbiting particles ring 1 */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-[-18px] rounded-full border border-dashed border-purple-500/20 pointer-events-none z-0"
+            >
+              <div className="absolute top-4 left-4 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_#a855f7] animate-pulse"></div>
+            </motion.div>
+
+            {/* Orbiting particles ring 2 */}
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-[-30px] rounded-full border border-dotted border-cyan-500/15 pointer-events-none z-0"
+            >
+              <div className="absolute bottom-4 right-4 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
+            </motion.div>
+
+            {/* Subtle Energy Pulse ring */}
+            <motion.div
+              animate={{
+                scale: [1, 1.15],
+                opacity: [0.4, 0]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeOut"
+              }}
+              className="absolute inset-0 rounded-full border-2 border-purple-500/30 pointer-events-none z-0"
             />
 
             <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-slate-800 shadow-[0_20px_50px_rgba(168,85,247,0.35)] bg-black p-0.5 z-10">
@@ -219,19 +246,83 @@ export const Hero = () => {
                 layoutId="hero-welcome-btn"
                 onClick={handleLaunchClick}
                 onMouseEnter={() => {
-                  setBtnHovered(true);
                   playBeep();
                 }}
-                onMouseLeave={() => setBtnHovered(false)}
                 exit={{ opacity: 0, scale: 0.85, y: 15 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="group relative inline-flex items-center justify-center py-3 px-8 rounded-full bg-purple-500/10 border border-purple-500/25 text-purple-400 text-xs font-bold tracking-widest uppercase transition-all duration-300 pointer-events-auto shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:shadow-[0_0_30px_rgba(168,85,247,0.45)] hover:scale-105"
+                animate={{
+                  y: [0, -6, 0],
+                  scale: [1, 1.02, 1],
+                  boxShadow: [
+                    "0 0 15px rgba(168, 85, 247, 0.25), inset 0 0 10px rgba(168, 85, 247, 0.1)",
+                    "0 0 30px rgba(34, 211, 238, 0.45), inset 0 0 15px rgba(34, 211, 238, 0.15)",
+                    "0 0 15px rgba(168, 85, 247, 0.25), inset 0 0 10px rgba(168, 85, 247, 0.1)"
+                  ],
+                  borderColor: [
+                    "rgba(168, 85, 247, 0.25)",
+                    "rgba(34, 211, 238, 0.5)",
+                    "rgba(168, 85, 247, 0.25)"
+                  ]
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 35px rgba(168, 85, 247, 0.55), inset 0 0 20px rgba(168, 85, 247, 0.2)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                transition={{
+                  y: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  scale: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  boxShadow: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  borderColor: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  default: { duration: 0.3 }
+                }}
+                className="group relative inline-flex items-center justify-center py-3.5 px-10 rounded-full bg-purple-500/10 border border-purple-500/25 text-purple-400 text-xs font-bold tracking-widest uppercase transition-all duration-300 pointer-events-auto shadow-[0_0_20px_rgba(168,85,247,0.15)]"
               >
-                {/* Spinning loading svg circle track */}
-                <svg className="absolute inset-0 w-full h-full animate-[spin_4s_linear_infinite]" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(34,211,238,0.5)" strokeWidth="2.5" strokeDasharray="30 20 10 30" />
+                {/* Spinning loading svg pill track */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none rounded-full" style={{ overflow: 'visible' }}>
+                  <motion.rect
+                    x="1"
+                    y="1"
+                    rx="9999"
+                    fill="none"
+                    stroke="url(#btn-border-grad)"
+                    strokeWidth="2"
+                    strokeDasharray="60 30"
+                    style={{
+                      width: 'calc(100% - 2px)',
+                      height: 'calc(100% - 2px)',
+                    }}
+                    animate={{ strokeDashoffset: [0, -90] }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                  <defs>
+                    <linearGradient id="btn-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#a855f7" />
+                      <stop offset="50%" stopColor="#22d3ee" />
+                      <stop offset="100%" stopColor="#a855f7" />
+                    </linearGradient>
+                  </defs>
                 </svg>
-                <span className="relative z-10">{btnHovered ? "🚀 Click to Enter" : "Welcome to my QA space"}</span>
+                <span className="relative z-10">🚀 CLICK TO ENTER</span>
               </motion.button>
             )}
           </AnimatePresence>
@@ -251,22 +342,18 @@ export const Hero = () => {
               <motion.div
                 layoutId="hero-profile-pic"
                 className="relative w-40 h-40 md:w-48 md:h-48 mb-6 select-none group flex items-center justify-center cursor-none"
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 100, damping: 12 }}
               >
                 {/* Rotating Neon Ring with pulsing glow */}
                 <motion.div
                   animate={{
                     rotate: 360,
-                    boxShadow: [
-                      "0 0 20px rgba(168,85,247,0.5)",
-                      "0 0 35px rgba(34,211,238,0.8)",
-                      "0 0 20px rgba(168,85,247,0.5)"
-                    ]
                   }}
+                  className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-purple-500 via-cyan-400 via-indigo-500 to-cyan-300 opacity-90 blur-[1.5px] z-0 transition-shadow duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_45px_rgba(168,85,247,0.8)]"
                   transition={{
-                    rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-                    boxShadow: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                    rotate: { duration: 10, repeat: Infinity, ease: "linear" }
                   }}
-                  className="absolute inset-[-6px] rounded-full bg-gradient-to-tr from-purple-500 via-cyan-400 via-indigo-500 to-cyan-300 opacity-90 blur-[1.5px] z-0"
                 />
 
                 {/* Inner Spin Ring */}
@@ -274,6 +361,38 @@ export const Hero = () => {
                   animate={{ rotate: -360 }}
                   transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
                   className="absolute inset-[-4px] rounded-full bg-gradient-to-tr from-cyan-400 via-emerald-400 to-purple-400 opacity-70 blur-[2px] z-0"
+                />
+
+                {/* Orbiting particles ring 1 */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-[-18px] rounded-full border border-dashed border-purple-500/20 pointer-events-none z-0"
+                >
+                  <div className="absolute top-4 left-4 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_#a855f7] animate-pulse"></div>
+                </motion.div>
+
+                {/* Orbiting particles ring 2 */}
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-[-30px] rounded-full border border-dotted border-cyan-500/15 pointer-events-none z-0"
+                >
+                  <div className="absolute bottom-4 right-4 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
+                </motion.div>
+
+                {/* Subtle Energy Pulse ring */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.15],
+                    opacity: [0.4, 0]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeOut"
+                  }}
+                  className="absolute inset-0 rounded-full border-2 border-purple-500/30 pointer-events-none z-0"
                 />
 
                 <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-slate-200/50 dark:border-slate-800/80 shadow-[0_20px_50px_rgba(168,85,247,0.25)] bg-white dark:bg-black p-0.5 z-10">
@@ -297,33 +416,25 @@ export const Hero = () => {
               >
                 <span>Welcome to my QA space 🛸</span>
               </motion.div>
-
-              {/* Sequential Heading Animations */}
-              <div className="space-y-1.5">
-                <div className="flex flex-wrap justify-center lg:justify-start gap-x-3 text-4xl md:text-6xl font-extrabold tracking-tight leading-none text-slate-900 dark:text-white font-heading">
-                  <motion.span
-                    initial={{ opacity: 0, y: 40, rotateX: -30 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 0.15 }}
-                    className="inline-block"
-                  >
-                    Hi,
-                  </motion.span>
-                  <motion.span
-                    initial={{ opacity: 0, y: 40, rotateX: -30 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 0.3 }}
-                    className="inline-block"
-                  >
-                    I'm
-                  </motion.span>
-                </div>
+                       {/* Sequential Heading Animations */}
+              <div className="space-y-1.5 font-heading">
+                <motion.div
+                  initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                  className="flex flex-wrap justify-center lg:justify-start gap-x-3 text-4xl md:text-6xl font-extrabold tracking-tight leading-none text-slate-900 dark:text-white"
+                >
+                  <span>Hi,</span>
+                  <span>I'm</span>
+                </motion.div>
                 
-                <div className="flex flex-wrap justify-center lg:justify-start gap-x-4 text-5xl md:text-7xl font-black tracking-tight leading-none font-heading">
+                <motion.div
+                  initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                  className="flex flex-wrap justify-center lg:justify-start gap-x-4 text-5xl md:text-7xl font-black tracking-tight leading-none"
+                >
                   <motion.span
-                    initial={{ opacity: 0, y: 50, scale: 0.7, rotateX: -30 }}
-                    animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-                    transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 0.45 }}
                     whileHover={{
                       textShadow: "0 0 15px rgba(168,85,247,0.5)",
                       scale: 1.05,
@@ -334,9 +445,6 @@ export const Hero = () => {
                     Abhijit
                   </motion.span>
                   <motion.span
-                    initial={{ opacity: 0, y: 50, scale: 0.7, rotateX: -30 }}
-                    animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-                    transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 0.6 }}
                     whileHover={{
                       textShadow: "0 0 15px rgba(168,85,247,0.5)",
                       scale: 1.05,
@@ -346,13 +454,13 @@ export const Hero = () => {
                   >
                     Rajpurohit
                   </motion.span>
-                </div>
+                </motion.div>
 
                 <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 0.75 }}
-                  className="text-xl md:text-2xl font-bold tracking-tight text-slate-850 dark:text-slate-200 pt-2 font-heading"
+                  initial={{ opacity: 0, y: 25, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+                  className="text-xl md:text-2xl font-bold tracking-tight text-slate-850 dark:text-slate-200 pt-2"
                 >
                   <span className="bg-gradient-to-r from-purple-500 to-cyan-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400 font-bold">QA Engineer</span> (Fresher)
                 </motion.h2>
@@ -360,9 +468,9 @@ export const Hero = () => {
 
               {/* Description Paragraph (Fades in with upward slide & blur reduction) */}
               <motion.p
-                initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.9 }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.65 }}
                 className="max-w-md text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed font-body"
               >
                 I am a passionate Fresher QA Engineer with hands-on internship experience in Manual Testing, Functional Testing, API Testing, Regression Testing, Bug Reporting and Test Case Design. I enjoy finding bugs before users do and ensuring software quality.
@@ -375,12 +483,12 @@ export const Hero = () => {
                 <motion.a
                   href="#contact"
                   onClick={(e) => handleRippleClick(e, handleContactClick)}
-                  initial={{ opacity: 0, y: 40, scale: 0.8 }}
+                  initial={{ opacity: 0, y: 25, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 1.05 }}
+                  transition={{ type: "spring", stiffness: 90, damping: 13, delay: 0.8 }}
                   whileHover={{
                     scale: 1.04,
-                    boxShadow: "0 0 25px rgba(168,85,247,0.6)"
+                    boxShadow: "0 0 25px rgba(168,85,247,0.55)"
                   }}
                   whileTap={{ scale: 0.96 }}
                   className="magnetic flex items-center justify-center space-x-2 py-3.5 px-8 rounded-xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-[size:200%_auto] hover:bg-[right_center] text-white shadow-lg transition-all duration-500 w-full sm:w-auto group relative overflow-hidden pointer-events-auto"
@@ -413,9 +521,9 @@ export const Hero = () => {
                   href="/Abhijit_resume_QA.pdf"
                   download
                   onClick={(e) => handleRippleClick(e)}
-                  initial={{ opacity: 0, y: 40, scale: 0.8 }}
+                  initial={{ opacity: 0, y: 25, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 70, damping: 11, mass: 0.95, delay: 1.15 }}
+                  transition={{ type: "spring", stiffness: 90, damping: 13, delay: 0.9 }}
                   whileHover={{
                     scale: 1.03,
                     boxShadow: "0 0 15px rgba(34,211,238,0.3)",

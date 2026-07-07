@@ -14,6 +14,7 @@ import CursorFollower from './components/CursorFollower';
 import { LaunchProvider, useLaunch } from './context/LaunchContext';
 import Preloader from './components/Preloader';
 import LaunchOverlay from './components/LaunchOverlay';
+import FuturisticBackground from './components/FuturisticBackground';
 
 function PortfolioContent() {
   const { launchState } = useLaunch();
@@ -31,6 +32,9 @@ function PortfolioContent() {
 
       {/* Console Boot Preloader Screen */}
       <Preloader />
+
+      {/* Futuristic cyber drifting star background */}
+      <FuturisticBackground />
 
       {/* Space Flight R3F Animation Overlay */}
       <LaunchOverlay />

@@ -17,8 +17,7 @@ export const playBeep = () => {
     const gain = audioCtx.createGain();
     
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 high beep
-    
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 high beep        
     gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
     
